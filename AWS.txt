@@ -1,0 +1,1509 @@
+										Concepts and Components
+										~~~~~~~~~~~~~~~~~~~~~~~
+										|Enterprise Applications|
+								|ApplicationServices|		|Developer  Tools|
+								|Security & Identity|		|Management Tools|
+										|Analytics|
+								|Compute|	|Storage|	|Databases|
+										|Networking|
+									|AWS Global Infrastructure|
+AWS Global Infrastructure
+~~~~~~~~~~~~~~~~~~~~~~~~~
+16 Regions and 40 AZs A Region will have 2 or more AZs  AZ is a data center Edge Location is part of CDN and is endpoint CloudFront over 50
+
+Networking
+~~~~~~~~~~
+*** VPC is a Virtual DataCenter within AWS Account. Can have multiple VPCs per account and can peer each other.Can be in different Regions.
+Direct Connect - Connects directly to AWS without Internet
+* Route 53 - Amazon's DNS Service
+
+Compute
+~~~~~~~
+*** EC2 is a virtual server
+ECS is an EC2 Container Services is EC2 + Docker!
+** Elastic Beanstalk designed for Developers to upload their code. AWS inspects and provisions underlying resources
+*Lambda Stateless runs code without provisioning Resources. You pay for compute time. No charge when code isnt running.
+
+Storage
+~~~~~~~
+*** S3 Simple Storage Services. (Object Level). Pay only for storage used.
+** CloudFront  uses Edge Location for Content Delivery.  	
+*Glacier is used for data archiving and long term backup. Can take 4 hours to access.
+EFS Elastic File System (Block Level)
+Snowball Import Export Service Petabyte scale.
+Storage Gateway. Connects OnPREM to AWS for Seamless secure connection b/w ONPREM to AWS Storage
+Gateway Cached (S3 buckets backed by Snapshots) vs Gateway Volume
+
+DataBases
+~~~~~~~~~
+* RDS	SQL Databases like PostGREs, MYSQL, Oracle, MariaDB, Aurora
+*** DynamoDB NOSQL
+ElastiCache - Uses in memory caching using Memcached and Reddis. Pull Product Types from ElastiCache
+Redshift - Business Intelligence
+DMS - Database Migration Service - Allows to migrate database from Legacy databases like Oracle tae Open Source like MYSQL
+
+Analytics
+~~~~~~~~~
+* EMR - ElasticMapReduce to process BigData
+Elastic Search is managed service. Search and Analytics for log analytics.
+* Kinesis - Platform for streaming data. 
+AML - Amazon Machine Learning. Think Amazon intelligenty providing you products based on your prior searches.
+
+Security and Identity
+~~~~~~~~~~~~~~~~~~~~~
+** IAM Control Users, Groups, Roles, Password Rotation, MFA
+* Directory Service 
+* KMS (Key Management Service)
+
+Management Tools
+~~~~~~~~~~~~~~~~
+* CloudWatch - Performance Monitoring Tool. Monitors AWS Environment
+** CloudFormation - Allows you to script your infrastructure. Turn data centers into scripts
+* CloudTrail - Is for Auditing to record changes made to environment
+*OpsWorks
+Trusted Advisor - Automated Service scans AWS environment that helps how you can save money or increase security
+
+Application Services
+~~~~~~~~~~~~~~~~~~~~
+* API Gateway
+* Elastic Transcoder Way of Transcoding Media Files
+* SES Simple email Service
+** SQS Simple Queue Service
+** SWF Simple workflow
+*** SNS Simple Notification Services
+
+Enterprise Applications
+~~~~~~~~~~~~~~~~~~~~~~~
+* Workspaces
+WorkDocs
+
+AD and Web Identity Federation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+For AD : User authenticates with AD server throught SSO. Gets back SAML Assertion! The call AssumeRoleWithSAML of the AWS Security Token Service (STS)
+		 (1) Browser passes Users username/password to authenticate against LDAP (say, through ADFS)
+		 (2) Browser is returned SAML assertion. Browser uses this SAML assertion to sign-in endpoint for SAML : https://signin.aws.amazon.com/saml
+		     The sign-in makes uses AssumeRoleWithSAML API to call STS to return temporary security credentials and constructs a sign-in URL for AWS Console
+	     (3) Browser is returned the sign-in url and is redirected to Console
+For WEB: User authenticates with Web Identity Provider. It returns an access token valid for upto 1 Hour. Then call AssumeRoleWithwebIdentity from STS to obtain
+         Temporary Security Credentials . You can use these credentials to then access Resource (like S3 ListBucket, DynamoDB tables etc)
+
+EC2
+~~~
+* DIRTMCG - D=Density (HADOOP). I-IOPS (NOSQL DB), R-RAM(Memory Intensitve), T-T2Micro(WebServers), M-M2Micro(App Servers), C-Compute(),G-Graphics(Video Streaming)
+* EC2 Virtualization - Each Instance Type supports two types of virtualization : ParaVirtual (PV) or HardwareVirtualMachine (HVM). Best performance comes from HVM. 
+* Metadata : http://169.254.169.254/latest/meta-data/
+* UserData : http://169.254.169.254/latest/user-data
+* EC2 Roles cannot be changed after creation. But the Permissions to them can be changes
+* EC2 Pricing depends on whether using On Demand, Reserved (1-3 years upfront payment upto 75% discount), SPOT or Dedicated
+  EC2 Pricing is calculated per-instance hour. Partial hour Instance in "Running" status are billed at full hour.
+* EC2 Data Transfer between two instance in different AZs : Each Instance is charged for Data In and Data Out. So its charged OUT for the first instance and IN for second.
+* On Demand - Fluctuating Load (could be for Black Friday). Limit is 20 OnDemand instances per region.
+* Reserved - For Applications that have stable load. Limit is 20 Reserved instances per region.
+  Reserved - You cannot transfer a Reserved Instance from one Region to Another
+  Reserved - Reserved Instances that are assigned to an Availability Zone can be assigned to a Region, by changing the "Scope"
+  Reserved - You cannot change the Instance Type of a Reserved Instance. It means you cannot change the instance type from t2.micro to m1.large. However,
+             you CAN change the instance size, say from t1.micro to t1.large.
+* Dedicated EC2 instances are instances that run on dedicated hardware dedicated to a single customer
+  Dedicated hardware are phyiscally isolated from other instances that are not dedicated instances. You can pay for dedicated on-demand or purchase reserved instances and
+  save upto 70%.
+* SPOT - When price exceeds BID. Amazon provisions New EC2 Instance and Terminates (if Amazon Terminates, no charge. IF you Terminate-charged for hour). Limit 20 per region.
+* SPOT - Does not have Upfront Price Commitments and is billed at hourly rates lower than OnDemand. All SPOT instances started at the same time are prices equally
+* SPOT - Great for Pharma or Genomics who can do with EC2 being pulled randomly if Prices falls below SPOT (temporary usage is ideal for SPOT)
+* Cluster - Cluster Compute Instances combines high compute resources with high performance networking for High Performance Compute (HFC)
+* SDKS - Android IOS JavaScript, .NET, Java, Python, PHP. Node.js, Go, Ruby, C++
+* SDKS - May or may Not default to region: Java Defaults to US-East-1. NodeJS does not.
+* EC2 APIs
+	- RunInstances			: Runs the instances using an AMI and returns the DNS names of the instances
+	- StartInstances		: Starts an instance that you have previously stopped
+	- StopInstances			: Stop the instances (EBS backed only. Instance Store Backed cannot be stopped and will throw an error when attempting to stop)
+	- TerminateInstances	: Terminate the instances
+	- DescribeInstances 	: Gives the status of the instances
+	- CreateVolume			: Create a Volume, either NEW from restore from SNAPSHOT
+	- AttachVolume			: Attaches an EBS volume to a running or stopped instance
+	- CreateSnapshot		: Creates a snapshot from an EBS Volume and stores it in S3
+	- CopySnapshot			: Copies a point-in-time Snapshot and stores it in S3. Can copy to S3 in the same region or a different region
+	- DescribeSnapshots		: Describes one or more EBS snapshots available to you.
+* EC2 CLIs
+	- aws ec2 run-instances --image-id ami-e3a5408a --count 20 --instance-type t1.micro --security-groups MySecurityGroup
+  This command launches 20 ec2 instance of t1 micro into MySecurityGroup
+* Placement Groups : Logical grouping of EC2 Instance within a Single Availability Zone. Useful for apps that need low latency and high network throughput
+* Placement Groups : Placement groups cannot span multiple Availability Zones
+* Placement Groups : If you stop an instance in a Placement Group, there is no guarantee it start up again. Start may fail if there is not enough capacity for the instance
+* Placement Groups : You cannot move an existing instance into a Placement Group. Instead, create an AMI from an existing instance and launch instance from AMI into the
+                     Placement Group.
+* Placement Groups : Placement Groups cannot be merged. You must terminate instances in one Placement Group and relaunch them in the other Placement Group
+* AMI : Create an AMI, Register an AMI. You can DeRegister an AMI
+  AMI : Can be copied from one region to another
+  AMI : Sharing : Can be kept Private, Shared with other accounts or making it public. To share an AMI in a diff region, copy AMI to target region and share it
+  AMI : Type : By Launch Permissions : public(Owner Grants Launch Permissions to all accounts), explicit (to specific accounts) and implicit
+  AMI : Type : By Storage
+			   Backed by Instance : Instance cannot be stopped and restarted (because data is lost)			   
+			   Backed by EBS      : Instance can be stopped and data persists. 
+* Elastic IP - Its "Permanent". Public IP is ephemeral. If you restart the Instance, Public IP might change but Elastic IP remains constant.
+  Elastic IP - Limited to 5 per region, due to scarcity of IPV4 addresses.
+  Elastic IP - You are charged on an hourly basis if ElasticIP is NOT attached to any running resource
+  Elastic IP - You can mask the failure of an instance or software by rapidly remapping the address to another instance in your account.
+* Tagging - You can tag EC2 Instances using CLI, EC2 API and Management Console.You can have multiple tags per EC2 Instance (max 50)
+  Tagging - You can use the DescribeTags API to list all tags and associated resources. 
+  Tagging - You cannot stop start delete a resource solely on tags. YoEu need resource identifiers to do this.  
+* Which Hypervisor does AWS use for hosting EC2 Instances?
+  Xen. A Hypervisor is a virtualization technique that isolates multiple running virtual hosts on a single machine. Essentially run multiple OS on one machine. One
+  OS virtual instance cannot interfere with another.
+* What are the two EC2 Platforms and differences between them?
+  EC2-Classic - Instances run on a single flat network shared with other customers
+  EC2-VPC     - Instance run within Isolated Networks (Virtual Data Centers)
+* Autoscaling - You CANNOT exceed EC2 Instance Limits when scaling up by Autoscaling. Remember, the maximum OnDemand Instances per region is 20
+* Autoscaling - What happens to public IP of EC2 Instances if you create a launch configuration NOT inside the default VPC?
+  They will NOT be assigned public IP addresses. Public IP addresses can ONLY be assigned on EC2 Instances created by AutoScaling Groups for DEFAULT VPC
+* AutoScaling - Can I scale UP my EC2 capacity fast but scale down slowly?
+  Yes - For ex: You may scale up EC2 capacity by 10% but scale down by 5%
+* What happens to EC2 Instances if the AutoScaling Groups is deleted?
+  All Running EC2 Instances associated with that AutoScaling Group will be terminated!
+* Cloudwatch - The minimal time interval for data that Cloudwatch received and aggregates is 1 minute
+* CloudWatch - You can retrieve metrics data from Terminated EC2 instance and Deleted ElasticLoadBalancers for 2 weeks
+* ECU is EC2 Compute Unit.
+* EC2 instances are launched from Amazon Machine Images (AMIs). A given public AMI can only be used to launch EC2 instances in the same AWS region as the 
+  AMI is stored. AMIs are only available in the region they are created. You can copy AMI from one region to another.
+* Which API call occurs in the final process of creating an AMI?
+  RegisterImage. For Amazon EBS backed instances, CreateImage creates AND registers the AMI.
+* Which API call would best be used to describe an Amazon Machine Image?
+  DescribeImages  
+  
+ELB
+~~~
+* Elastic Load Balancing distributes incoming application traffic across multiple EC2 instances, in multiple Availability Zones. 
+  This increases the fault tolerance of your applications. Can be used in conjunction with Autoscaling groups.
+* ARN Syntax : arn:aws:elasticloadbalancing:region:my-account-id:loadbalancer/load-balancer-name
+* ARN Example: arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/my-load-balancer
+* Is NOT Free - Charged by the hour and Per GIG
+* Two Types of Load Balancers : Classic Load Balancers and Application Load Balancers
+* Classic Load Balancers are used to load balance across Multiple EC2 Instances
+* Classic Load Balancers Supports Http, Https, TCP and SSL
+* Classic Load Balancers work across both EC2-Classic and EC2-VPC
+* Application Load Balancers are used to load balance across Multiple Micro Services/Container or across Multiple Ports on an EC2 Instance
+* Application Load Balancers Supports Http, Https, Http/2 and Websockets
+* Application Load Balancers work across only EC2-VPC
+* Key Difference between Classic Load Balancer and Application Load Balancer is the way you configure the load balancers to register instances:
+  With a Classic Load Balancer, you register instances with the load balancer. 
+  With an Application Load Balancer, you register the instances as targets in a target group, and route traffic to a target group.
+* ELB CLI commands:
+	-	aws elb create-elastic-load-balancer -- load-balancer-name myloadbalancer --scheme internal (Creates Internal Load Balancer)
+	-	aws elb register-instances-with-load-balancer --load-balancer-name myloadbalancer
+	-	aws elb describe-load-balancers --load-balancer-name myloadbalancer
+* Internet Facing Load Balancer
+	Nodes of Internet Facing LoadBalancer have public IP Addresses
+	ELB DNS Names : When you create a Load Balancer, you get a public DNS Name that clients can connect to
+	ELB DNS Names : ELB in EC2-VPC can map to ipv4 addresses only. ELB in EC2-Classic can map to ipv4, ipv6 or both(dualstack)
+* Internal Load Balancer
+	Nodes of Internal Load Balancers have private IP Addresses
+* Modifying ELB
+		- You can Add or Remove Availability Zones from ELB at any time (perhaps all instances in an AZ have gone down)
+		- You can Add or Remove Subnets from ELB at any time
+		  For Internet Facing ELB, add public subnets. For Internal ELB add private subnets.
+		- You can Add or Remove Instances from ELB at any time
+		   - If you Remove an Instance(Deregister), Instance keeps running but is DeRegistered from LoadBalancer. ELB waits until all in-flight
+		     requests are completed.
+		   - If your LoadBalancer is attached to an Autoscaling group, all instances are  Registered. If you detach a LoadBalancer from an 
+		     Autoscaling Group, all instances are DeRegistered
+		   - Steps : First add your instance to AZ, register instance with ELB, register AZ with ELB
+* Protocols
+	- OSI defines Layer 4 (TCP/SSL) and Layer 7 (HTTP/HTTPS)
+	- If you open TCP/SSL as Internet Facing, then you MUST have TCP/SSL as Internal
+	- If you open HTTP/HTTPS as Internet Facing, then you MUST have HTTP/HTTPS as Internal
+	- For each instance of a Backend, ELB maintains TWO connections - one for the client and one for backend
+	- HTTP/HTTPS can use the following headers to identify details of the client:
+		-	X-Forwarded-For (Gives the clients IP address. Accumulated in order from left to right, leftmost IP being client)
+		-	X-Forwarded-Proto (Gives the client's protocol, eg https)
+		-	X-Forwarded-Port (Gives the client's port, eg 8080)
+	- HTTPS/SSL Listeners
+		-	Need to install X.509 Server Certificate on the Load Balancer
+		-	Supports both SSL Termination and SSL OffLoading
+			SSL Termination is essentially ELB getting and decrypting client request, terminating the connection, sending request to backend
+			SSL Offloading is when you don't want ELB to terminate SSL Connection but delegate it to backend. Certificates are
+			essentially installed on the backend.
+		-	ELB does not support Server Name Indication (SNI)
+			You can use Subject Alternative Name (SAN) for each additional website. SAN helps protect multiple host names with a 
+			single certificate
+* DNS Names
+	-	Example of DNS Name : myloadbalancer-1234567890.us-east-1.elb.amazonaws.com
+	-	You can use your own DNS Registrar or Route53 as a DNS
+	-	To use a Custom Domain Name (such as www.example.com)
+		-	You can either a DNS Service such as your Domain Registrar to create a CNAME record to route queries to your ELB
+		-	You can use Route53 as your DNS Service. 
+			-	Use hosted zone to route Internet Traffic for your Domain Name (www.example.com) and SubDomain (foo.example.com)
+			-	Use Alias Resource Record Set which routes queries for your domain name to your ELB
+* Monitoring
+	- CloudWatch Metrics
+	- Access Logs in Amazon S3
+	- CloudTrail to log API calls
+* Listeners and Ports. External Listeners (Client Side) and Internal Listeners (Internal such as EC2)
+* Can talk to all ports [1-65535]
+* Supports Health Checks (in Conjunction with Autoscaling)
+* Cross-Zone Load Balancing : By Default an ELB distributes traffic evenly across ALL AZs. To enable distribution of traffic across EACH Instance in all
+  registered AZs, enable Cross-Zone Load Balancing. However, its still recommended to create EQUAL number of instances in each registered AZ
+* ELB Session State : Sticky Sessions (NOT PREFFERRED) or ElastiCache (PREFERRED)
+	- Sticky Sessions : Disabled by default
+	- Sticky Sessions : Created so that specific instances can cache or serve user session. Ex : If ELB statelessly sends each client request(say from two clients
+	  on two separate browsers), then the applications running on EC2 Instances will not be able to service the same user with surety as ELB may route subsequent
+	  requests randomly to other EC2 instances. For this reasons, we can use sticky sessions so clients can indicate which EC2 instances wil be service via ELB
+	- Sticky Sessions : Load Balancers route traffic to the same instances as users continue to access the application. However, if the number of users increase
+	  exponentially, they will receive cookies that will direct their traffic to these original instances, regardless of how many instances you add to scale.
+	- Sticky Sessions : Duration Based (ELB Creates the cookie) and Application Based(ELB uses Application's cookie and creates Special Cookie to associate session)
+	- ElastiCache : PREFERRED WAY. Store Sessions in RDS. ELB routes traffic to instances regularly. Instance checks ElastiCache first to see if session exists, else
+	  pulls session from RDS updating ElastiCache. Subsequent pulls are done from Elasticache.
+* ELB need at least two subnets across multiple availability zones. You can have one subnet per AZ. If you add another subnet, it will replace the existing subnet.
+* ELB Time-To-Live ensures IP Addreses can be remapped quickly in response to changing traffic. TTL specified by a DNS entry is 60 seconds.
+* You can have multiple SSL certificates (for multiple domain names) on a single Elastic Load Balancer.
+* Http Error Codes - 200 (success), 300 (redirect), 400 (client error), 500 (server error)
+* Do Classic ELB Support SSL Termination?
+  Yes you can terminate SSL Connections on Classic Load Balancers. You must install SSL Certificates on the Load Balancers.
+* Which of the following certificates should you deploy on your load balancer if you are using HTTPS or SSL for your front-end listener?
+  If you use HTTPS or SSL for your front-end listener, you must deploy an X.509 certificate (SSL server certificate) on your load balancer.
+* Does the Classic load balancer support IPv6 traffic?
+  Classic Load Balancers support ipv4, ipv6 and dual stack DNS Names. Load Balancers in EC2-Classic Support both IPV4 and IPV6. Load Balancers in EC2-VPC
+  support only IPV4 DNS Names
+* Regarding Public DNS names for your Load Balancer, the public DNS name with the dualstack prefix returns which type of records?
+  Both IPv4 and IPv6
+* Can I use Classic Load Balancers in Amazon Virtual Private Cloud?
+  Yes.
+* Can I configure a security group for the front-end of Classic Load Balancers?
+  Yes, only if the Classic Load Balancer is inside a VPC
+* What is the best method for maintaining application session state when using an Elastic Load Balancer?
+  Use ElastiCache (Not Application Based or ELB/Duration Based Stickiness)
+* Which of the following protocol headers helps in identifying the IP address of a client when ELB is configured with HTTP/HTTPS on AWS?
+  X-Forwarded-For
+* A user app has received an X-Forwarded-For header from ELB. The data of the header is “X-Forwarded-For: 203.10.103.70, 10.10.35.84, 10.83.43.98”. 
+  Which is the client IP address of this header?
+  203.10.103.70 - The rest are ELB IPs (could be multiple ELBs between the client and the Instance where APP is running)
+
+EBS
+~~~
+* Only one EBS per EC2 Instance. EFS can be used to mount to multiple EC2 (Block)
+* You will continue to be charged for data if you detach an EBS volume from your instance. Best practise is to delete the volume if not needed.
+* EBS volumes are only accessible through EC2 APIS - NOT S3 API.
+* To Prevent EBS Volume from being deleted when EC2 instance is terminated: Set the "DeleteOnTermination" attribute to "false"
+  By Default all ROOT volumes attached to an Instance have "DeleteOnTermination" set to "true". You can change this to "false" using CLI.
+  By Default all later attached EBS volumes to an EC2 Instance have "DeleteOnTermination"  set to "false".
+  You can change the value of "DeleteOnTermination" attribute when instance is launch AND when the instance is running via Console and CLI.
+* EBS and EFS are both block based.
+* EBS Performance - You can join gp2, io1, scc, st1 in a RAID 0 configuration to improve performance
+* EBS Performance - Volumes Created from Snapshots (from S3) will need to be Initialized (pre-warmed) if needed full performance. You essentially
+					read from all the blocks once before using the volume in Production. Else there will be a drop in I/O initial call.
+* EBS 3 Types - GP2(SSD-IOPS), IO1(SSD-IOPS), SCC(HDD-Throughput), ST1(HDD-Throughput), Magnetic Tape
+		GP2 16TB  Upto 10000 IOPS (providing bursts of 3000 IOPS) - Small Relational Databases 
+		IO1 16TB Over 10000 IOPS - NoSQL databases or Large Relational Databases
+		Magnetic 1TB (Low IOPS) - File System(Cheap Infrequent access)
+* EBS Monitoring - Use Cloudwatch to gather metrics. There  are two types of monitoring data: Basic and Detailed
+		Basic sends metric to Cloudwatch over 5 minute interval (GP2, SCC, ST1, Magnetic)
+		Detailed sends metric to Cloudwatch over 1 minute intervals (IO1)
+* EBS  Monitoring - Volume status checks run every 5 minutes. These can be results of monitoring:
+		OK 		 - Status is in good health
+		IMPAIRED - If Amazon EBS detects inconsistent data, it disables I/O to the volume. If the next volume check fails, the status
+			   is set to IMPAIRED. You can re-enable I/O, but its recommended to run chkdsk (win) or fsck (Linux) first 
+		WARNING  - Can happen during IO1 initialization and performance drops to less than 50%. This can be ignored
+		INSUFFICIENT-DATA - Health monitoring could be in progress
+* SNAPSHOTS - Backup of your EBS volumes saved in Amazon S3.They only capture updated data.You can create an EBS volume from an existing SNAPSHOT.
+  You can IMMEDIATELY start using the EBS volume that was created from the SNAPSHOT. If you access data that hasn't been loaded yet, the volume 
+  immediately downloads the data from the S3 (lazy loading)
+* ENCRYPTION - EBS enryption supports encryption in all the following : Data at Rest, Transit between EC2 and EBS and Data in SNAPSHOTS
+* SNAPSHOTS - Are versioned. You can create a Volume point-in-time from any existing SNAPHSOT!
+* SNAPSHOTS - You can view both Global (Public Snapshots) and Private Snapshots shared with you from the Amazon Console
+* SNAPSHOTS - Can EBS Volumes be in use when a SNAPSHOT is taken?
+  Yes - Though only the data on the EBS volume will be captured. Any data cached by the OS etc will not be captured. Its preferable to detach the volume and then
+  capture the SNAPSHOT. If the EBS volume is root, then its recommended to Shut Down the Instance and then capture the SNAPSHOT
+* Can users of my Amazon EBS shared snapshots change any of my data?
+  No - they can only make copies of the shared SNAPSHOTS into their accounts. They cannot modify the original data.
+* A user has created three EBS snapshots on 3 consecutive days. If the user deletes the snapshot of Day 2, what will happen?
+  Day 1 snapshot refers to blocks “A-B-C”, 
+  Day 2 has modified the “B” block as well a newly added “D” block while 
+  Day 3 has “modified “B” from the previous day and a newly added “E” block.
+  Ans : SNAPSHOTS are incremental. Only the Day 2 "B" will be deleted. "D" will be left intact. 
+* A user has created an EBS volume of 10 GB. The user takes the first snapshot of that volume. What will happen when the snapshot is taken?
+  AWS will create a SNAPSHOT of only the blocks written to the volume
+
+S3
+~~
+* Can have upto 100 Buckets per account. Need to contact Amazon to increase this limit. Bucket can contain both encypted and non-encrypted objects.
+* Bucket can be between 3 and 63 characters and the name of the bucket can contain numbers, lower case letters, 
+  periods (.), dashes (-).It should not be formatted as an IP address. It CANNOT contain underscores (_). The name MUST start with letter or number.
+  Also you cannot add two special characters (so mybucket--com is WRONG)
+* Pricing depends on STOREDA - Storage, Request and Data Transfer
+* Are you charged for Data Transfer for buckets within the same Region?
+  No there is no charge. Transfer between S3 Buckets in the Same region are Free.
+* S3 is object based storage. 0 bytes to 5 TB. Can upload 5 GB in one go! Key-Value based and stores data in alphabetical order
+* S3 new Objects are Read after Write consistency. Updates and Deletes are eventual consistency.
+* S3 Cannot install OS, Databases. Objects uploaded to S3 are private by default. Server Side Encryption using AES-256 possible.
+* S3 Properties : Logging, Static Websites, Versioning & Cross Region Replication, Events, LifeCycle, Encryption, PreSigned URL
+* S3 URL Look like this : 		https://s3-us-east-1.amazonaws.com/myfoobucket
+* S3 Website URLS look like this: 	http://myfoobucket.s3-website-us-east-1.amazonaws.com
+* S3 Static Website - can have STATIC websites but NOT dynamic websites
+* S3 Static Website - Does S3 Support Redirects for static websites?
+  Yes It does.  You can set rules to enable redirection at both Bucket level and Object level
+* S3 - Standard Access(11 9's of durability & 2 facility failovers), Infrequent Access (same),Reduce Redundancy(99.99% Durability and 1 facility fail)
+	   Offers Events to be sent via SNS, SQS or Lambda for PutObject, 
+* S3 - Infrequent Access
+	   Same availability (99.99%) and durablitiy of (99.999999999%) as Standard. IF you delete file  < 30 days
+	   then you are charged for the full 30 day duration. Also, minimum file size is 128K. IF you upload a file
+	   less than 128 KB, you are charged for 128 KB
+* S3 - Reduced Redundancy Storage
+	   Offers 99.99% availability and 99.99% durability. Ideal for non critical storage such as thumbnails which are generated. 
+	   Via Notifications, in case an of an object lost, S3 can sent notification to listeners
+* S3 - Glacier can store upto 40 Terabytes of Data in "Vaults"
+* S3 - Glacier is excellent for Archived Data (Retrieval time 4-5 hours)
+* S3 - Glacier You can pull 5% of S3 data stored in Glacier for Free each month
+* S3 - Glacier If you delete any data from Glacier within 3 months of upload - you are charged. After three months it is free.
+* S3 - Glacier automatically encrypts data using AES-256. It supports the same level of encryption as S3.
+* CORS Configuration - Allow access to different S3 bucket. Enable CORS on resources that access other S3 using CORS XML
+* CORS Configuration - Uses Rules to process CORS configuration. Upto 100 rules are allowed.
+					 <CORSRule>
+						<AllowedOrigin>http://www.example1.com</AllowedOrigin>
+						<AllowedMethod>PUT</AllowedMethod>
+						<AllowedMethod>POST</AllowedMethod>
+						<AllowedMethod>DELETE</AllowedMethod>
+						<AllowedHeader>*</AllowedHeader>
+					 </CORSRule>
+* CORS Configuration - AllowedOrigin allows at most one wildcard (*). So *.example.com will allow www.example.com and foo.example.com origin
+* CORS Configuration - AllowedMethod allows GET PUT POST DELETE HEAD
+* CORS Congiguration - AllowedHeader enforces header match to allow this request. Ex: User should pass x-amz-server-side-encryption header
+* Versioning - Delete places Delete Marker. Deleting the Delete Marker RESTORES the file. To permanently erase, delete the final non-delete marker version
+  EX: If you have the following versions:
+	V3
+	V2
+	V1
+	(ISSUE DELETE)
+	D-Marker (V=4)
+	V3
+	V2
+	V1
+	(ISSUE DELETE V=3)
+	V2
+	V1
+* Versioning - If you tried to delete an object, the Delete Marker is at the top. Attempting a GET will result in 404. But attempting  a GET on specific
+  VersionID will return that version.
+* Versioning - How to protect from accidental Delete?
+  Add MFA for deletion. By default your account credentials are used to protect deletes. 
+* Versioning - Costs to store version. So IF you have scenario where media hosting has 1 GIG+ files - Versioning will make it 2GB- Costly. 
+* Versioning - How is pricing calculcated for S3 Versioning?
+  IF you have a file of X GB and after a few days you upload another file with same Key Name of YGB,
+  then you are calculated pro-rata for both. So If X was uploaded for x days and Y was uploaded for y days
+  then the calculated will be using X.x + Y.y where y < x
+* Cross Region Replication - Demands Versioning Enabled on both Source and Destination Buckets. Only moves NEW Objects when enabled.
+* Cross Region Replication - Replicates new Objects (for which source owner has Read permissions, Objects created with SSE-S3
+						   - Does NOT replicate objects with SSE-C and SSE-KMS, Objects owner does NOT have permissions, only customer
+							 actions are replicated: LifeCycle operations are NOT replicated
+* Events - S3 can send events to SQS, SNS, Lambda Function. Ex: On upload, Generate Watermark. Use S3 and send event to Lambda.
+* LifeCycle - S3 can send files to IA 30 days after creation MINIMUM and 128k
+* LifeCycle - S3 can then send files to Glacier 30 days after IA move MINIMUM (so at least 60 days after creation)
+* LifeCycle - S3 can then DELETE 61 DAYs after Object Creation
+* LifeCycle - S3 can send files to Glacier 1 day after creation if Bypassing IA. 
+* LifeCycle - If Versioning is enabled, S3 first EXPIRES Versions and then Permanently Deletes Versions
+* Encryption - In order to enable encryption at rest using EC2 and Elastic Block Store you need to configure Encryption when creating EBS Volume
+* Encryption - In Transit : Using SSL/TLS 
+* Encryption - At Rest : Server Side (SSE-S3, SSE-KMS, SSE-C customer provided)  or Client Side all through AES-256
+	Client side
+		Use Amazon's client encryption Libary
+	Server Side (Encryption at rest. S3 encrypts data at object level while writing to disk and decrypts when returning back)
+		SSE-C  - Amazon manages encryption - keys managed by Customer. Client side Master Keys and unencrypted data are NEVER sent to AWS
+				 In the header for PutObject :  "x-amz-server-side-encryption-customer-algorithm" : "AES256"
+												"x-amz-server-side-encryption-customer-key" : [pass 256 bit base64 encoded key]
+												"x-amz-server-side-encryption-customer-key-MD5" : [pass the 128 bit MD5 digest]
+		SSE-S3 - Amazon S3 handles all of the encryption/decryption of objects, including the rotation of Master Keys. S3 encrypts data using
+				 a unique key. It then encrypts this key using a Master Key which it rotates. Uses AES256 as block cipher.
+				 In the header of PutObject request for ex: pass "x-amz-server-side-encryption" : "AES256"
+		SSE-KMS - Uses Customer Master Keys (CMK) to encrypt S3 Objects. Use AWS KMS to create the encryption keys. This feature allows audit trails
+				 of key usage. The first time you upload an object to S3 using PutObject with SSE-KMS header, a default CMK is created which S3 uses
+				 to encrypt object unless you selected a CMK separately using AWS KMS
+				 In the header of PutObject request for ex: pass "x-amz-server-side-encryption" : "aws:kms"
+* PreSigned URL - For allowing user to download private data directly from S3, insert PRESIGNED URL in the Page before giving to user
+* CloudFront - CDN (Content Delivery Network) : Origin is like S3, ELB, EC2 or Route53, (NOT RDS) Edge Locations, Distribution (Name = Collection of Edge Location)
+* CloudFront - URL for CloudFront is in this form 		: http://d111111abcdef8.cloudfront.net/images/image.jpg
+			   URL for CloudFront using CNAME     		: http://www.example.com/images/image.jpg
+			   URL for CloudFront using CNAME * wildcard: http://foo.example.com/images/image.jpg
+														  http://faa.foo.example.com/images/image.jpg								
+* CloudFront - Reduces Latency to Users. We upload file to origin which distributes to Edge Locations.
+* CloudFront - Origin can be EC2, S3, ELB, Route53, (NOT RDS) or even any non-AWS origin Server (ex http server in your data center). Can have multiple origins.
+* CloudFront - When you create CloudFront distro, you get a Domain Name. You can use CNAME for alternate domain name (like www.example.com)
+* CloudFront - Edge Locations are different from AZ. They are NOT Read Only. Can be written to which pushes changes to Origin.
+			 - Supports GET, OPTIONS, HEAD, PATCH, PUT POST DELETE. Configuring all allows read and write access.
+			 - Edge Location caches objects for TTL. It expires after TTL expires. Default 24 hours. To Clear cache - you are charged.
+  			 - Distributions  (Name given to CDN=Collection of Edge Locations)- Web Distribution and RTMP (for Flash files etc)
+			 - You can provide Alternate Domain Names aka CNAMES for your WEB or RTMP Distributions
+					- Instead of Cloudfront URL :    http://d111111abcdef8.cloudfront.net/images/image.jpg
+					- You can use your own  URL :    http://www.example.com/images/image.jpg
+  			 - Can restrict using WhiteList or BlackList (Geo Restriction). You can WhiteList or BlackList countries. One or the other not both.
+			 - If you turn ON Cloudfront Logging - the files are stored in S3 bucket. You can choose a bucket (mycloudfrontbucket)!
+* CloudFront - Serving Private Content : Restrict access to objects in Edge caches + Restrict Access to objects in your S3
+					- Restrict Access to objects in Edge caches to specific users using either SignedURLs or Signed Cookies
+					  You can set the signed URL or signed cookie to expire at certain point. Optionally specify when signed URL or cookie becomes available or IP
+					  address or range of IP addresses that can access objects in Edge Caches.
+					- Restrict Access to S3 using Origin Access Identity. 
+					  By default when you create an S3 Origin, it is public to serve both CloudFront and other users. 
+					  To restrict access so that users can only access content through CloudFront URLS:
+						- Create an Origin Access Identity, which is a special user and associate this Identity with the Distribution
+						- Create bucket policies to ONLY allow access to the Origin Access Identity 
+						- You can have upto 100 Origin Access Identity users. Though technically you need only ONE and assign to all Distributions
+					- Restrict access to S3 to remove permissions to everyone else to access S3 objects directly
+* S3 Import/Export Disk 	- Can import to EBS, S3, Glacier BUT CAN ONLY EXPORT FROM S3.
+							- Can import or export upto 16 TB of data
+* S3 Import/Export Snowball - Can Import and Export to S3 ONLY. Amazon prefers SNOWBALL as opposed to Import/Export Disk
+							- Can import or export upto 80 TB of data (US Regions allow both 50TB and 80TB options)
+* S3 How to control access to S3?
+	ACLs(Access Control Lists)  - works on Buckets and Objects. Grant specific Permissions (READ, WRITE, FULL_CONTROL) to specific users
+	Presigned URLs		    - AKA query string auth. Create temporary URLS to Objects in S3 buckets valid for limited time
+	Bucket Policies		    - works on all objects within a single Bucket. Add or deny access to objects within a bucket.
+	IAM Roles		    	- Grant fine grained acceses to users
+* S3 Transfer Acceleration - Useful when users are farther away from target region. Charged a fee and provides a new endpoint to upload.
+* S3 Transfer Acceleration - Uses CloudFront Edge Location to speed up transfers to S3.
+  S3 Transfer Acceleration - How to choose between S3 Transfer Acceleration or CloudFront's PUT/POST?
+  	For smaller size files, use CloudFront's PUT/POST. Else Transfer Acceleration maybe better option
+  S3 Transfer Acceleration - How to choose between S3 Transfer Acceleration and Import/Export SnowBall?
+	For Low Bandwidth Internet connections, Might be better to use Import/Export Snowball. Import/Export Snowball typically takes 5-7 business days,
+	so if you have a fast internet connection probably better to use S3 Transfer Acceleratoin
+  S3 Transfer Acceleration - What is the endpoint for S3 Transfer Accceleration?
+	https://cloudguru.s3-accelerate.amazonaws.com or
+ 	https://cloudguru.s3-accelerate.dualstack.amazonaws.com
+* S3 Multi Part Upload - What is a Multipart upload and how is it done?
+  MultiPart upload is used to upload large files broken into chunks. Its a THREE Step process: INITIATE, UPLOAD the parts, COMPLETE the upload
+* S3 Multi Part Upload - Multipart Upload is REQUIRED when size of the file is greater than 5GB in size!  When file is above 100MB using multi-part upload 
+  is still recommended Range is 5MB to 5 TB.
+* S3 Multi Part Upload - Salient features  
+	1) Can upload independently, in any order, and in parallel
+	2) If any part fails to upload, you can retransmit that part
+	3) You can pause/resume uploads
+	4) You can upload objects as they are being created
+	5) Object is reassembled after calling "CompleteMultiPartUpload" API
+* S3 Multi Part Delete - What is Multi Object delete and how is it done?
+  Multi object delete allows you to delete multiple objects using upto 1000 keys in one go
+  Multi object delete can optionally take keys and version id to delete specific versions
+  Can be done in two modes : verbose and quiet. Verbose returns a status for each deleted key. In quiet, the only status returned is on error on key deletion
+  MFA Delete and Multi object delete requires an MFA token for buckets that have versioning enabled with MFA. Else delete or Multi object delete will fail
+* S3 IPV6 - S3 supports both IPV4 and IPV6
+  S3 IPV6 - Uses dualstack endpoint that supports both IPv4 and IPv6. Its backwardly compatible with IPV4 VPCs and older IPV4 S3 APIs
+* S3 Performance Optimization - 
+     Scenarios are either Mix of PUT/LIST/DELETE/GET or mostly GET. Also remember that S3 uses PARTITIONS.
+	- Mostly GET : Use CloudFront Edge Locations
+	- Mix of PUT/LIST/DELETE/GET: If PUT/LIST/DELETE exceed 100 Requests per second or GET exceeds 300 requests per second
+	  To ensure Request-Rate Performance Optimization, Key Names are used to decide in which PARITION S3 stores the object in. So if you use
+	  Timestamp (YYYY-MM-DD-HH:MM:SS) or Sequence (11111/1.jpg, 11112/2.jpg, 11113/3.jpg), odds are S3 will group a large number in same PARITION
+	  drastically reducing performance! 
+	  However, by introducing ****RANDOMNESS**** in Key Names, you will get a more Distribution of the objects in different PARTITIONS:
+	  -- ADD a hash prefix to the key names:
+	     myfoobucket/2016-10-10-01-02-00/photo1.jpg	BECOMES  myfoobucket/232a-2016-10-10-01-02-00/photo1.jpg
+	     myfoobucket/2016-10-10-01-02-00/photo2.jpg	BECOMES  myfoobucket/554a-2016-10-10-01-02-00/photo2.jpg
+	  -- REVERSE the Key name
+	     myfoobucket/111122/photo1.jpg 				BECOMES  myfoobucket/2211111/photo1.jpg
+	     myfoobucket/111123/photo1.jpg 				BECOMES  myfoobucket/3211111/photo1.jpg
+	     myfoobucket/2016-10-10-01-02-00/photo1.jpg	BECOMES myfoobucket/00-02-01-10-10-2016/photo1.jpg
+		 
+* Important S3 Limits:
+	Unlimited Number of Objects in S3 or Archives in Glacier
+	100 S3 buckets per account per region [Contact AWS to increase limit]
+	1000 Glacier Vaults per account per region
+	3 to 63 characters in bucket names. alpha numeric. - and . is allowed. _ is not. Can start with AlphaNumeric. Cannot have --, .- etc adjacent.
+	0 byte to  5 TB size of Objects in S3.
+	1 byte to 40 TB size of Archives in Glacier.
+	5 GB is Max size in one PUT in S3. 
+	100 MB or more Recommended (5 GB or more Mandatory) for MultiPart Upload. 5MB - 5 TB
+	1000 keys limit for Multi Object Delete
+	100 Max no of CORS rules allowed
+	
+* Which of the descriptions below best describes what the following bucket policy does?
+	{
+		"Version" : "2012-10-17",
+		"Id" : "Linux Academy Question",
+		"Statement" : [{
+				"Sid" : "Linux Academy Question",
+				"Effect" : "Allow",
+				"Principal" : "*",
+				"Action" : "s3:GetObject",
+				"Resource" : "arn:aws:s3:::linuxacademybucket/*",		// 1 (For illustration only - you cant have more than one Resource)
+				"Resource" : "arn:aws:s3:::*",							// 2 (For illustration only - you cant have more than one Resource)
+				"Condition" : {
+					"StringLike" : {
+						"aws:Referer" : ["http://www.linuxacademy.com/*", "http://www.amazon.com/*"]
+					}
+				}
+			}
+		]
+	}
+	(1) Allow only domains linuxacademy and amazon to READ ACCESS to the objects in the bucket linuxacademybucket
+	(2) Allow only domains linuxacademy and amazon to READ ACCESS to ALL buckets in the account.
+* What us error 409?
+	Error 409 = Conflict
+	1) S3 Bucket already exist (BucketAlreadyExists)
+	2) Bucket is not empty (when trying to delete) (BucketNotEmpty)
+	3) Previous attempt to create bucket succeeded and you already own it (BucketAlreadyOwnedByYou)
+* Which of the following request headers, when specified in an API call, will cause an object to be SSE?
+  x-amz-server-side-encryption
+
+RDS
+~~~
+* RDS (relation database), RedShift (Data Warehousing), ElastiCache (In Memory Cache - Memcached or Reddis), DMS (Database Migration Service)
+* POMSAM - PostGres, Oracle, MariaDB, SQL Server, AuroraDB, MySQL - OLTP Engines
+* REDSHIFT - OLAP Engine (PETABYTE SCALE)
+  Amazon REDSHIFT is a fast, fully managed, petabyte-scale data warehouse service that makes it simple and cost-effective to efficiently analyze 
+  all your data using your existing business intelligence tools. You can start small for just $0.25 per hour with no commitments or upfront costs 
+  and scale to a petabyte or more for $1,000 per terabyte per year, less than a tenth of most other data warehousing solutions.
+* OLAP vs OLTP  - Online Analyical Processing vs Online Transaction Processing
+		- Large vs Small Query Sets. 
+		- OLTP selection based (Live Data) while OLAP is aggregation based (Star Schema - Older Data)
+* ElastiCache 	- In Memory Cache using MemcacheD or Reddis. Scenario :: to improve performance - pull data from cache rather than RDS
+		- Elasticache caches most frequently, consistently  queries aspects of database. If web app requests top 10 deals constantly,
+		  then push this to ElastiCache rather than pull from Database
+* DMS 	- Allows to migrate from Oracle to RDS. AWS Manages complexities of migration such as data type, comopression etc. Schema conversion
+		  Tool that allows conversion from source to target database (say Oracle to MySQL)
+* RDS VPC - DB Instances NOT created in VPC are given External IP Addresses.
+* RDS VPC - STRONG Recommendation to connect to DB Instance via DNS Name since the underlying IP address can change
+* RDS VPC - DB Subnet Group - Primary used for Multi-AZ deployments.
+* RDS VPC - DB Subnet Group - DB Subnet Group should contain one subnet in EACH AZ. This is required for Multi-AZ deployments
+* RDS VPC - DB Subnet Group - Recommendation is to create each subnet as a private subnet, ie with no route to internet
+* RDS VPC - DB Subnet Group - In RDS creation wizard, you need to specific DB Subnet Group. DB Subnet Group contains at least one subnet which hosts
+							  your DB EC2 Instances.
+* RDS VPC - DB Subnet Group - You can modify DB Subnet Groups to add or remove more subnets in an AZ or new AZs
+* Reserved Instances - Can reserve DB instances from 1 to 3 years. Heavily discounted. Payment : No Upfront, Partial Upfront or Full Upfront
+* Reserved Instances - Can reserve upto 40 instances. Contact Amazon for more.	
+* Reserved Instances - Can convert your existing instances to Reserved by purchasing the DB Instance reservation with exactly the  same 
+					   instance class, DB engine and License in the Region.
+* Maintanence Window - Time during which instances are maintained. During this window, scaling, software patching can occur
+* Maintanence Window - 30 minutes in duration. You can choose a maintanence window or default is assigned
+* Maintanence Window - Maintanence events that cause RDS to go offline are scaled computation events (scaling) and software patching
+					   Database downtime during such events can be mitigated via Multi-AZ deployments
+* RDS Scaling - Storage or Compute (Instance class)
+			  - You can increase Storage without interrupting DB Instance availability. However, on scaling up or down DB Instance Class
+				it may cause instance downtime. You can schedule it during Maintanence Window or Immediately "Apply Now". If you have multi-AZ
+				deployments, "Apply Now" could 	be an option to mitigate customer impact.
+			  - To scale past maximum Storage Capacity or DB Instance Class supported by Amazon, use PARITIONING
+			  - Choose RDS Aurora compared to MYSQL which is designed to provide much higher throughput			 
+* RDS Storage - SSD, IOPS, Magnetic
+				IOPS - for high workloads such as high performance OLTP transactions
+				SSD  - for medium workloads
+				Magnetic - for low workloads with infrequent I/O
+* RDS Backup - Automated and Snapshots
+			 - Both are stored in S3
+			 - Automated Backups are taken during Maintanence Window. 
+			 - Automated Backups are retained specified by "Retention Period". Default 1 day can be extended to 35 days
+			 - DB Snapshots can be take as frequently as you wish.
+			 - Restore from a DB Snapshot creates a NEW DB INSTANCE with a NEW ENDPOINT. This is to support creation of multiple instances 
+			   (for testing first perhaps) from DB Snaphots
+			 - If database is deleted, all Automated Backups are deleted from S3
+			 - If database is deleted, the last snapshot is taken and store in S3. Snapshots are not deleted.
+* RDS Encryption - You can create an encrypted DB Instance at time of creation. Existing DB Instances cannot be encrypted. You can create new
+				   encrypted instances and export data from the unencrypted instance and terminate the old DB Instances.
+				 - On database instances running with encryption means Data At Rest : All Storage, Automated Backups, DB Snaphots, Read Replicas
+				   are encrypted.
+				 - Encryption is managed by keys managed by customer using KMS
+* RDS APIs	- CreateDBInstance		- Creates a new DB Instance (can set "Multi-AZ" parameter to true for Multi-AZ deployment)
+			- DescribeDBInstances	- describe your running DB Instances, including latest restorable time (from backup) for your instance
+			- ModifyDBInstances 	- modify the retention period of the automated backups. Change DB Instance to "Multi-AZ" using parameter to true. 
+			- CreateDBSnapshot		- create a point-in-time snapshot of your DB Instance in S3
+			- CopyDBSnapshot		- copy a db snapshot
+* Multi-AZ Deployments and Read Replicas: Both can be used together and complement each other.
+	- Multi-Az deployments. Create a DB Subnet Group with one subnet in each AZ
+	- Multi-AZ deployments. Choose this subnet group when creating a Multi-AZ RDS deployments
+	- Multi-AZ deployments. You can change a single-AZ deployment to Multi-AZ at any time
+	- Multi-AZ deployments. Improved Fault Tolerance and availability in case : AZ Failures, DB Instance Failures, Storage Failures
+	- Multi-AZ deployments. Uses synchronous updates to keep Primary and Standby in synch
+		- Primary : Accepts Reads Writes and is the primary database instance. 
+		- Standby : Cannot accept user Read/Writes. All software patches, scaling etc first happen on Standby.
+		- Primary and Standby : Both have to be in the same Region, though different AZs
+		- Failover: Due to failing situations described above, Primary switches over to Standby automatically, which becomes the new Primary
+		- Failover: Usually completes within 1-2 minutes. CNAME is flipped between Primary and Standby
+	- Read Replicas : Supported only by POSTGres (Max 5), MySQL Server  (Max 5) and MariaDB (Max 5)
+	- Read Replicas : Useful when there are Read Heavy centric workfloads on the source DB Instance
+	- Read Replicas : Uses asynchronous technologies of these very engines. So there can be lag between source and replicas
+	- Read Replicas : Backup is necessary for Read Replicas to work
+	- Read Replicas : You can connect to Read Replicas just like any other instance. Use DescribeDBInstances API to get endpoints
+	- Read Replicas : You can create Read Replica from another Read Replica. MYSQL and MariaDB only. 
+	- Read Replicas : If lag becomes too much (source update far too frequently), you can delete Replicas and recreate them
+
+* How many DB Instances can I run with Amazon RDS?
+  By Default you are allowed upto 40 Database Instances. Out of which upto 10 can be Oracle or  SQL Server.
+* How Many Instance Hours am I allowed in Free Tier?
+  750. You can use single-AZ or multi-AZ in Free Tier, noting that for 2 Instance Multi-Az,400 Instance Hours double(so effectively 800 Instance Hours)
+* Can I move existing DB Instances from outside a VPC into my VPC?
+  Yes - can easily be done via Console
+* Can I move my DB Instances from inside my VPC to outside my VPC?
+  No - for security reasons, you cannot MOVE your DB Instance or "Restore-in-Point" from Backups to an Instance outside VPC. You can export your data
+  to a DB Instance outside VPC though.
+* Can I encrypt data at Rest on RDS?
+  Yes - using KMS. On RDS running with encryption, all Data storage, Read Replicas and automated backups and snapshots are encrypted via KMS.
+  Encryption can only be enabled during RDS creation. For existing non-encrypted DB Instances, you will have to create a new encrypted DB Instance and
+  export your data from existing instance to the new encrypted DB Instances
+
+DynamoDB
+~~~~~~~~
+	* Stored on SSD. Single second latency. Supports both Document and Key-Value models. Useful for mobile, web, gaming, IoT
+	* Spread across 3 different Geographical data centers to ensure high availability, updatime and durability
+	* Read has Eventually consistent (Default) vs strongly consistent
+		- If application can wait upto a second for data to spread out to diff data centers use Eventually consistent
+		- If application cannot wait - then use strongly consistent 
+	* DynamoDB uses Optimisic Concurrency Control
+	    - Each Item in DynamoDB has a version number. When you retrieve an Item and perform update on that item, update is only allowed if the server
+		  side version number has NOT changed. If it has, then someone else has updated the item and the update Fails. This prevents you overwriting
+		  someone else's change and vice-versa  
+	* Expressions:
+		- Expressions work on Both Regular Columns and Parition + Sort Keys
+		- ConditionExpression, KeyConditionExpression, ProjectionExpression, FilterExpression are types of Expressions
+		- ConditionExpression : attribute_exists(Partitionkey), attribute_not_exists(Partitionkey). Use it to prevent PutItem from replacing an
+		  existing Item. If you have "ConditionExpression" : "attribute_not_exists(town)" and try to insert "town" : "Atlanta" when it already 
+		  exists, will prevent this from replacing the existing entry
+	* DynamoDB supports increments and decrements on Scalar values
+	* Tables(Required), Items, Attributes, Primary Key(Required), LSI, GSI. Can Nest upto 32 attributes. 256 Table Limit. Contact AWS to increase limit.
+	  Items can be unlimited and no limits on attributes but an individual Item cannot exceed 400KB in size. Item MUST have a primary or composite key.
+	* DynamoDBAccessRoles from EC2 Instance
+	
+	* DynamoDB Streams:
+		- DynamoDB Streams can capture any kind of modification to table. Streams store data for 24 hours. 
+		  If Update to table (stream captures image before and after)
+		  If Delete to table (stream captures image before)
+		- DynamodDB Streams Can call Lambda or SES. You can send an email to a customer after an update via SES.
+		- DynamoDB Streams Pricing is calculated for reading data from Streams.
+		- DynamoDB Triggers connect Streams to Lambda Functions. Whenver any item is added, updated or deleted, a new Record is 
+		  written to the Stream which in turn triggers a Lambda function
+		- DynamoDB Triggers are created by creating a Lambda function and associating it with a Stream
+		- DynamoDB Triggers are deleted by deleting the Lambda function associated with the Stream.
+		
+	* DynamoDB Cross Region Replication:
+		- A source table (Master) is copied over one or many Replicas. Replicas maintain identical copies of the master.
+		- No limits to the number of replicas
+		- Useful for Disaster Recovery, Faster Reads for users near Replicas
+		- Replication done using DynamoDB Cross Region Replication Library
+		- Pricing is calculate for Each Replicas Throughput, Data Transfer across Regions, EC2 Instance. Reading Data from Streams
+		- The EC2 Instance runs in the same region where the cross region replication application was launched
+		- The source table remains available while the Read Replica Operation is running.  
+		- The application that does replication uses Scan operation to pull data from source - recommended to give sufficient read capacity units
+		- After creating Replicas, the secondary Indexes are NOT propagated to replicas. You will have to create them manually
+		- You CAN have a replica in the same region as master, but it will have to have a different table name
+		
+	* DynamoDB Pricing
+	    - Calculate Price
+		Write throughput $.0065 per hour for 10 Items
+		Read throughput  $.0065 per hour for 50 items
+		First 25 GB free, $.25 per GB per month
+		EX: Application does 1 million reads and 1 million writes per day! Storage is 28 GB! What cost per month?
+		Read! 1000000/24/60/60 ~ 12 reads per second
+		Price = .0065/10*12=.0078 per hour= $.1872 per day=5.616$ per month
+		Write! 100000/24/60/60 = 12 writes per second
+		Price = .0065/50*12 = .00156 per hour = .0374 per day=1.1232$ per month
+		25GB free = .75 Cents per month
+		Total = 7.4892$ per month
+		- Reserved capacity pricing offers significant savings over the normal price of DynamoDB provisioned throughput capacity.
+		
+	* DynanoDB API:
+		- CreateTable
+		- UpdateTable    : Updates the provisioned throughput of the table
+		- DeleteTable
+		- DescribeTable	 : Will also list GSI associate with a table. If you call DescribeTable immediately after CreateTable, you
+						   may get ResourceNotFoundException. DescribeTable uses eventual consistency.
+		- ListTables	 : Lists upto 100 Tables. If more tables exist, uses Pagination
+		- PutItem 	 	 : Inserts a new Item or Replaces an entire Item
+		- UpdateItem 	 : Edits an attribute on an Item
+		- BatchWriteItem : Batch write of upto 25 Items upto 16MB in size
+		- GetItem	 	 : Gets all attributes of an Item(Eventual Consistent Read by default) - Supports ProjectionExpression
+		- BatchGetItem   : Batch get of upto 100 Items upto 16MB in size. If you request > 100 Items,you will get a ValidationException.
+						   Supports ProjectionExpression
+		- DeleteItem	 : Deletes an ITem from the table.
+		- Query		 : Searches based on Primary Key or secondary Indexes. Cannot exceed 1 MB in size. Supports ProjectionExpression. 
+		- Scan		 : Searched the entire table or secondary indexes. Cannot exceed 1 MB in size. Supports ProjectionExpression
+		- GetRecords : Stream API used to get Stream Data. Cannot exceed 1 MB in size.
+	* DynamoDB Data Types:
+	  	- Scalar : Number, String, Binary, Boolean	
+		- Collection : Number Set, String Set, Binary Set, Heterogenous List and Homogenous Map
+		- NULL
+		
+	* DynanoDB Primary Keys:
+		- One Partition Key (Hash) 
+		- One Sort Key (Range)
+		- Single Attribute Primary Key : Only PartitionKey (Customer ID)
+        	- Composite Keys : Partition Key and Sort Key (Thread Name and Date Created)
+		- Two Items cannot have the same Partition Key and Sort Key
+		
+	* DynanoDB Indexes:
+		- Use Eg UserID (Primary Key), GameTitle(Sort Key), TopScore, CreatedTime
+		- Projections : Core of indexes and what makes queries faster. Redundant copies of attributes are copied over to the Local Secondary Index. 
+		  This includes the Table Partition and Sort Key and the alternate Sort Key you defined. When you query an LSI, DynamoDB can acccess any 
+		  of the projected attributes as if they were in a table of their own.
+		- Projections : KEYS_ONLY(Partition and Sort Keys + Index Keys), INCLUDE (Specific upto 20 attributes), ALL (all attributes)
+		- LSI (Local Secondary Index):
+			-Needs to be created at time of table! Cannot be modified or deleted after creation.
+			-Has to use the same Partition Key but a different Sort Key
+			-Can be retrieved using QUERY and SCAN API
+			-If you use Query on a local secondary index, then capacity units are consumed from the table's provisioned throughput
+			-Since LSI has to use the same Partition Key, its Query selection is more "Local". ie to a single Parition (UserID)
+			-Only SCALAR Types (Number, String, Boolean) can be indexed. Set, list and map cannot be indexed			
+		    -Can be both Eventually Consistent or Strongly Consistent
+			-Item Collection:
+				-Any Group of items that have the same PartitionKey across a Table and across all of its LSIs
+				-Are created and maintained automatically for all tables that have LSI
+				-There is a limit of 10 GB per Item Collection. For a distinct Partition Key the sum of all Item sizes in the table plus the item 
+				 sizes in the LSI must not exceed 10GB. This does not apply to tables that do not have LSI.
+				-This has no impact on the OVERALL storage of DynamoDB which is Unlimited.
+				-If you exceed 10GB for an Item Collection, you will not be able to write new items or increase size of existing Items for that Parition Key.   
+				 Writes that shrink the size of the Item Collection for that Partition Key are still allowed
+				-To monitor how much Item Collection size is left: PutItem, BatchWriteItem, UpdateItem and DeleteItem take an optional parameter that returns 
+				 the estimate of Item Collection Size in response. Recommendation is to write applications that examine these responses and warn you in time 
+				 to do something about it if Item Collection size is about to be breached
+		- GSI (Global Secondary Index):
+			-Can be created/deleted at any time.
+			-Can use any attributes as Indexes including Partition Key and Sort Key. Partition Key need not have unique values.
+			-Can be retrieved by QUERY and SCAN API
+			-If you use Query or Scan on a global secondary index, then capacity units are consumed from the Indexes's provisioned throughput
+			-Since GSI doesn't use the Partition Key, its Query selection is more "Global". ie across Partitions (GameTitle)
+			-Only SCALAR Types (Number, String, Boolean) can be indexed. Set, list and map cannot be indexed
+			-Can be assigned to attributes that are non-unique (Eg GameTitle & TopScore)
+			-Eventually Consistent. IF an item adds "TicTacToe" and 500 as TopScore for UserID Gamer123, querying against
+			 GamerTitle and TopScore may not return these values immediately
+			-If you add or remove an index after a table is created, it could take some time for the index to be added/deleted
+			 depending on the size of the table. Could take from a few minutes to a few hours
+		- LSI & GSI : Can have upto 5 LSI and 5 GSI in a table
+		- DIFFERENCES BETWEEN LSI and GSI : http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/SecondaryIndexes.html
+		
+	* DynamoDB Query vs Scan:
+		- Query uses Partition Key (and an optional sort key for refining)
+		- Scan queries the entire table. Can cause exceeding of throughput of tables.
+		- Query and Scan Both default return all attributes. Use ProjectionExpression parameter to return specific attributes
+		- Query results are sorted by sort key in Ascending order
+		- Query and Scan Both Default read are eventually consistent. They can override to Strongly consistent by passing ConsistentRead parameter 
+		  - NOTE : Query on GSI is eventually consistent ONLY. Query on LSI can be both eventually consistent or strongly consistent!!
+		- ScanIndexForward set to false to get descending order
+		- Pagination. DynamoDB returns data results from Query and Scans in pages. Since the max data size for both is 1MB.
+		- Pagination. If 1 MB read is exhausted, use the LastEvaluatedKey in the previous request as the ExclusiveStartKey in the next to return the next 1MB.
+		- Pagination. When all resultsets have been read, the value of the LastEvaluatedKey will be NULL.
+		- Limits. Use Limit to return 'n' items. If you use a FilterExpression, DynamoDB will return 'n' items matching that filter expression
+		- Performance. Generally, Query is more efficient than a Scan (since it queries over a partition key)
+		- Performance. Avoid sudden bursts of Query read activity as it can cause repeated ProvisionedThroughputExceededException with 400 status error
+		- Performance. Preferable is to have evenly distributed Query Read Requests to avoid the above
+		- Performance. For Scans or Queries, reduce page size by using Limits. So as not to return default 1MB, set the Limit to return 'n' items per read request.
+		- Performance. Parallel Scans wherever applicable (if table size is > 20GB, read request is not fully utilized or if scans are slow)
+		- Performance. Parallel Scans Workers choose start Segment and TotalSegments. Choose TotalSegments. Recommended for 30GB size is 30GB/2 = 15 TotalSegments
+		
+	* Provisioned Throughput:
+		-	DynamoDB Divides a table across multiple partitions.
+		-   What is the maximum write throughput of a partition in DynamoDB? 1000
+		-	What is the maximum read  throughput of a partition in DynamoDB? 3000
+		-	There is no theoretical upper limit to throughput to a table. You can increase throughput using the UpdateTable API as stated afore.
+		    If you want to increase throughput beyond 10,000 Read or Writes per second (in all Regions except US Standard) or 40,000 for US Standard then contact AWS.
+		-	What happens when Provisioned throughput exceeds configured?
+			You get a 400 HttpStatus code with ProvisionedThroughputExceededException
+		-	DynamoDB Table remains AVAILABLE if you on demand update the throughput
+		-	Read Provisioned Throughput 
+			All reads are rounded up to multiples of 4KB in size
+			Eventual Consistent Reads (Default) : 2 Reads per second
+			Strongly Consistent Reads	    	: 1 Reads per second
+		-	Write Provisioned Throughput
+			All writes are rounded upto multiples of 1KB in size
+			All Writes are 1 Writes per second
+		-   Calculate Provisioned throughput:
+			1) Application Requires 10 Items of 1 KB per second using eventual consistency! what is Read Throughput?
+			Multiple of 4KB? 4KB
+			How many read units? 4KB/4=1 Read Unit per Item
+			How many items?10 = 1 Read Unit * 10 = 10
+			Eventially consistent? 10/2 = 5 Units of Read Throughput
+			Strongly Consistent? 10/1 = 10 Units of Read Throughput
+			2) Application requires 5 Items of 10 KB using Strong consistency! What is read throughput?
+			Multiple of 4KB? 12 KB
+			Read Units? 12KB/4KB = 3 Read Units
+			How many Items? 5
+			What is Read throughput? 5 * 3 / 1 = 15 Read Throughput
+			3) Application Requires 12 Items of 100KB per Item each second! what is write through put?
+			Multiples of 1KB = 100 KB
+			Write Units? 100KB/1KB = 100 Write Units per Item
+			How many Items? 12
+			Write throughput? 12*100/1 = 1200
+			
+	* Optimizing Provisioned Throughput:
+		- When storing Time Series data-> Separate "Cold" data from "Hot". ie spread data out in separate tables - one per time period(month/day etc)
+		  "Cold" data may not be accessed frequently (such as Older forum replies). If the Sort (Range) key is a timestamp, best way is to store data
+		  in separate tables based on the timestamp. This way the "Hot" (newer Replies) which are queried more will not consume entire throughput.
+		- Use ElastiCache to pull "Hot" data from the Cache. Delete Old data or tables if they're not needed at all.
+		- Primary Key Selection (Partitioning) ->  Understand how it works. When storing data, DynamoDB paritions data based on Parition Key. 
+		  - Provisioned Throughput is also evenly distributed across partitions. To spread workload evenly across Paritions, Partition key should be 
+		    distributed evenly. This can be achieved by building Partition (hash) keys with distinct values.
+		    Thus, if Partition Keys are not distinct, workload will be concentrated heavily on few Partitions throttling throughput.
+		  - Examples of good and bad Partition Keys scenarios:
+			   USER ID	   - Unique Users										  - Good Partition Key
+			   STATUS CODE - Few Status Codes									  - Bad Partition Key
+			   DEVICE ID   - When Devices are being queried uniformly 			  - Good Partition Key
+			   DEVICE ID   - When only a few Devices are being queried frequently - Bad  Partition Key
+		  - Randomizing Partition Keys : If you have a Partition Key like 2009-03-03. You can add a random number to distribute Partitions more evenly
+		    So doing Partitions like 2009-03-03.01, 2009-03-03.02
+		- Scan and Query -> can consume a lot of throughput,some lookups can create hotspots.Best to limit the Query/Scans via Pagination (Use Limits)
+		
+	* FGAC (Fine Grained Access Control)
+		- This is under Tables>AccessControl tab	
+		- Used in conjunction with IAM. Specifies WHO can access WHICH attributes and WHAT actions can be performed on them (read/write)
+		- Scenario : A mobile gaming app can modify ONLY the "TopScore" attribute of a Table and can READ all other attributes
+		- You can use FGAC only on TopLevel Attributes but not on Nested Attributes
+		- How does it work? Application requests a security token using which the app can access only specific Items in a DynamoDB Table.
+		  The app can interact directly with the Table.
+		- Create an IAM Role. Assign access policy to that role. The trust policy determines which identity provider is accepted (google, facebook etc)
+		- App can use this Role to call STS AssumeRolewithWebIdentity to Federate (get acccess token for 1 hr default)
+		  They then can use the following APIS to converse with DynamoDB : BatchGetItem, BatchWriteItem, GetItem, PutItem, DeleteItem, Query
+		- No additional charge for using FGAC. You only pay for throughput and storage
+		
+	* Error Handling. These are some common error scenarios. DynamoDB returns HttpStatusCode(200), ExceptionName(ProvisionedThroughputExceededException)
+	  and Description of the error:
+		- 400 (Problem with your request)
+			- AccessDeniedException : Client did not correctly sign the request
+			- ItemCollectionSizeLimitExceededException : Table with LSI, 10GB limit was breached
+			- LimitExceededException :  At most 10 concurrent states can occur (CREATE TABLE, DELETE TABLE etc). Exceeding this throws this exception
+			- ProvisionedThroughputExceededException : Exceeding the throughput capacity of the Table (with or without LSI) or Index (with GSI)
+			- ThrottlingException : If you do CreateTable, UpdateTable, DeleteTable too quickly.
+			- UnrecognizedClientException : Security Token or Access Key is invalid
+		- 500 (Internal Server Error)
+		- 503 (Service Unavailable)
+		
+	* DynanoDB Miscellaneous
+		-	Conditional Writes (Idempotent) - Ok for Financial Applications
+			When writing to a table, Conditional Writes are used to make sure first query update doesnt affect a second. It uses a conditional
+			write as part of the write. So if one user writes to an Item ID=1 Price=15$ and another user Item ID=1 and Price=20$.
+			Conditional writes is update Item if Price=10$. Only one user will be able to write Idempotentively, which means you can send the same
+			request again and again, it will have no further effect! Idempotent are used when there are NO margins of errors
+		-	Atomic Counters/Atomic Updates (not Idempotent) - Ok for website counters! Not ok for Financial operations
+			Atomic Counters uses UpdateItem operation always increments a counter. Atomic counters are used when data need not be correct.
+			
+	* Important Dynamo DB Limits:
+		- 10000 Max Throughput for all Regions except US Standard. 40000 Max Throughput for US Standard [Contact AWS to increase limit #1]
+		- 1000 Max Write Throughput per Parition. 3000 Max Read Throughput per Partition.
+		- 256 Number of Tables per Region. 3-255 characters Table Names.								[Contact AWS to increase limit #2]
+		- 2048 Partition Key Length. 1024 Sort Key Length.
+		- 400KB Maximum Size of Item
+		- 32 Item Nesting allowed
+		- 10 Cumulative Number of Tables and Indexes in CREATING, UPDATING, DELETEING states (more and it throws LimitExceededException)
+		- 100 Items & 16 MB BatchGetItem. 25 Items and 16MB BatchWriteItem
+		- 1 MB Query and Scan Max resultset size.
+		- 10GB size of ItemCollection for LSI Tables. (exceeding throws ItemCollectionSizeLimitExceededException)
+	* How can I allow users to Query LSI, but prevent them from accessing non-projected attributes?
+	  If querying on non-projected attributes is expensive and you want to prevent users from querying them, you can limit permissions to
+	  only projected attributes using dynamodb:Attributes key
+	* Do Writes and Reads to/from GSI Impact Provisioned Throughput of a table?
+	  Yes - Both Writes and Reads impact Provisioned Throughput of a table.
+    * How do I know if I am exceeding my provisioned throughput capacity?	
+      Cloudwatch and Alarms can indicate these.	
+	* How many projected non-key attributes can I create on one table?
+	  Each table can have upto 20 non-key attributes across all LSIs
+	* What is the charge for the data transferred between Amazon DynamoDB and other Amazon Web Services within the same Region?
+	  There is NO Charge to transfer data b/w DynamoDB and Other Webservices within the same region
+	* When should you consider using DynamoDb instead of MongoDB?
+	  Use DynamoDB if you are going to integrate with other Amazon Web Services. Use DynamoDB if you are NOT going to have an employee 
+	  to manage the database servers.
+	* Can I provision throughput separately for the table and for each global secondary index?
+	  Yes - A GSI throughput is managed independently of the table its part of. In fact, its possbile to consume the throughput of the Indexes
+	  and get throttled even though you may not have consumed the table's throughput.
+	* How am I charged for DynamoDB global secondary index?
+	  You are charged for the throughput of the table + throughput of the Index + Data Transfer fees if any.
+	* What is the order of the results in scan on a global secondary index?
+	  For a Partition only GSI - no sorting. For Partion+Sort GSI - ordering is based on Sort Key
+	* Can I add or delete more than one index in a single API call on the same table?
+	  No - only one index per API call can be deleted or added. 
+	* Which all limits in DynamoDB do you have to request AWS to increase?
+	  Total number of tables (256)
+	  Provisioned throughput Maximums (Per Table 10000 Reads/Writes in all other Regions. In US Standard 40000 Read/Writes)
+
+SQS and SNS
+~~~~~~~~~~~
+* SQS was the first application launched by Amazon. Supports horizontal scaling
+* SQS Queue Names are limited to 80 characters & SNS Topic names are limited to 256 characters. Both Topic and Queue names must be unique in an account.
+  SQS Queue Names and Topic Names allow -(dash),_(underscore),alphanumeric.
+* SQS can be delivered multiple Times and in any order. If you want order, you need to integrate into the Message
+* SQS authentication ensures against unauthorized access. Only AWS Account owners can access the queues they create.
+  SQL authentication uses either your Access Key ID or X.509 (server side) certificate to authenticate you
+* SQS If you want priority of different messages, set up different queues and poll them independently, give first priority to more high priority message
+* SQS Client side buffering allows you buffer upto ten requests at client side before sending.(essentially client side Buffering + Batching)
+  AmazonSQSBufferedAsyncClient uses the same interface as AmazonSQSAsyncClient so no change in code is required to use it
+* SQS VisibilityTimeouts - Amazon uses Visibility Timouts So that the message is delivered AT LEAST ONCE.
+  SQS VisibilityTimeouts - Timeouts start when the consuming application polls the Queue for message.
+  SQS VisibilityTimeouts - Application MUST call DeleteMessage with Receipt Handle before Visibility Timeout Expires to remove message from queue.
+  SQS VisibilityTimeouts - IF for any reason the consuming application goes down and was unable to retrieve message when timeout expires,
+						   the message is kept stored in the queue, which can be redelivered. 
+  SQS VisibilityTimeouts - Default timeout is 30 seconds. Can be extended by ChangeMessageVisibility API to upto 12 Hrs.
+  SQS VisibilityTimeouts - To Terminate a Visibility Timeout (perhaps you dont want to process the message), set VisibilityTimeout to ZERO.
+						   This makes the message Immediately available back in the queue.
+* SQS ShortPolling is default. Can switch to LongPolling whose maximum time allowed is 20 Seconds
+  SQS ShortPolling returns immediately
+  SQS LongPolling doesn't return immediately - waits until the long poll timeout expires or a message arrives within the LongPoll interval.
+  SQS LongPolling is enabled by setting the ReceiveMessageWaitTimeSeconds property in SetQueueAttributes API to a number > 1
+  Scenario : If EC2 application is consuming lot of CPU Cycles polling Amazon for SQS messages when mostly its 
+  empty what should you do? Switch to Long Polling - this will save precious CPU cycles (which you are being charged)
+* SQS Message :
+    - Minumum Message Size is 1 KB and Maximum Message Size is 256 KB
+	- Message Content can only be XML, JSON or Unformatted Text
+	- Messages can be retained in Queues between 1 Minute and 14 days. Default 4 days.
+	- Message ID and Receipt Handles:
+		- SendMessage, you get a messageID useful for identifying messages.
+		- ReceiveMessage, you get a Receipt Handle which is a globally unique identifier. You can use this to DeleteMessage from queue.
+		- ReceiveMessage, if you get a message more than once, you will get two different Receipt Handle
+	- Large Message Strategy: If you have need of Messages larger than 256 KB, use SQS in conjunction with Amazon S3. Specify in Message
+	  where to look for data in S3 and then EC2 applications will pull it from S3 and process them.
+	- Large Message Strategy: Only available for JAVA using Amazon SQS Extended Client Library
+* SQS Dead Letter Queue (DLQ): If a message delivery attempts fails after a few messages, a queue can forward these messages to the DLQ
+* SQS Dead Letter Queue (DLQ): Queues that act as dead letter queues are not deleted as long as any of their source queues still exist.
+* SQS Delay Queue : Similar to Visibility timeouts except that Visibility timeouts make message unavailable AFTER message is received, 
+* SQS Delay Queue : while with Delay Queue, message is made unavailable to consumers right at the onset. Used to postpone delivery of messages.
+* SQS Delay Queue : Can be configured upto 15 minutes either at queue creation time or using SetQueueAttributes with DelaySeconds parameter
+* SQS Delay Queue : Instead of delay at Queue level,set delay at Message Level using Message Timers. Message Timers override Delay Queue value.
+* SQS is PULL while SNS is Push
+  SQS Applications poll AWS to pull messages. With SNS applications publish notifications to AWS.
+  SNS is Publisher Subscriber - useful when same message needs to be broadcast to multiple recipients
+  SNS can publish notifications to Protocols like Http, Https, Email, **Email-JSON**, SMS, SQS, Application (like Baidu Cloud), Lambda
+* Both SNS and SQS message size is 256KB
+  SQS is billed as 4 requests per 256KB. So if you make 1 256KB request its actually charged for 4 requests
+* SNS can publish to multiple SQS queues (Fanning out)
+* SNS Message Data Structure:
+    -XML, JSON or Unformatted Text
+	-Base64-encoded "SHA1 with RSA" signature
+	-Message
+	-MessageID
+	-Type "Notification"
+	-Timestamp
+	-TopicARN values
+	-Subject
+	-Signature
+	-SigningCertURL
+	-UnsubscribeURL
+* SQS API:
+	- ReceiveMessage			: Receive one or more messages in Queue (upto 10)
+	- DeleteMesage				: Delete a message from queue
+	- SendMessage				: Send a message to a queue
+	- ChangeMessageVisibility	: Change the message visibility timeout
+	- DeleteMessageBatch		: Delete a set of messages (upto 10)
+	- SendMessageBatch			: Send a batch of messages (upto 10). Total Size of all messages cannot exceed 256 KB.
+	- ChangeMessageVisibilityBatch : Change a batch of messages visibility (upto 10)
+	- CreateQueue
+	- DeleteQueue
+	- ListQueues
+	- ListDeadLetterSourceQueues: List all Dead Letter Source Queues
+	- PurgeQueue				: Delete all messages in a Queue
+	- SetQueueAttributes		: MessageRetentionPeriod(Upto 14 days),MaximumMessageSize(Upto 256 KB),ReceiveMessageWaitTimeSeconds(Upto 20 seconds)
+								  DelaySeconds(upto 15 minutes)
+	- GetQueueAttributes
+* SNS API:
+	- Subscribe
+	- Unsubscribe
+	- Publish
+	- CreateTopic
+	- DeleteTopic
+	- ListTopics
+	- ListSubscriptions
+	- ListSubscriptionsByTopic
+	- SetTopicAttributes
+	- GetTopicAttributes
+* SNS Securing messages sent to SNS can only be sent by users with Valid AWS ID. Moreover, messages should be sent to SSL endpoints
+* SNS Multiple Users can publish to a Topic provided they have valid AWS IDs
+* SNS Subscribers need NOT have valid AWS IDs. 
+  - Subscribers WITH AWS IDs can subscribe to any Topic provided they have been given permissions
+  - Subscribers WITHOUT AWS IDs, Topic  owners can subscribe on their behalf
+* SNS confirming Subscriptions
+  - HTTP/HTTPS : SNS Posts the confirmation Token to the specified URL. Applications monitoring the URL must call ConfirmSubscription API
+  - Email/Email-JSON : SubscribeURL is sent which would need to be confimed
+  - SQS : Token sent to the Queue. Application monitoring the Queue would need to call ConfirmSubscription API
+  - Tokens containing subscription are valid for 3 days
+* SNS Publishers with Valid AWS IDs HAVE to sign the message using their secret access key
+* SNS Notification CANNOT contain more than one message.  it will be a single published message
+* SNS makes no guarantee of order of delivery of messages or number of times a message can be received
+* SNS Messages cannot be deleted or recalled after publish
+* SQS Batch requests DO NOT cost more than regular requests. In fact it could be more cost effective to use Batch.
+* SQS price 1,000,000 free per month and then is per 1,000,000 $0.50
+  SNS price 1,000,000 free per month and then is per 1,000,000 $0.50
+* What happens if no activity is detected against a Queue for more than 30 days?
+  Amazon MAY delete the queue after 30 days of inactivity
+* How long are the messages kept on an SQS queue by default?
+  By Default messages are kept for 4 days. It varies between 1 minute and 2 weeks!But Default is 4 Days
+* How many Queues and Messages can a  user have?
+  UNLIMITED
+* If your System requires order be preserved, does SQS support this?
+  SQS makes NO guarantee of Order while delivering messages, ie FIFO is not guaranteed. If an application does need the messages in sequence,
+  it can put sequencing information in the messages and application polling the queue need to order the messages on their own!
+* There are four messages published to queue which are not received by the consumer, If the user tries to delete the queue, what will happen?
+  Users can delete the queues at any time. The queue will be deleted and messages are lost.
+* For anonymous access, what is the value of the SenderId attribute for a message?
+  Its the IP Address
+* Can a single topic support subscriptions over multiple protocols/transports?
+  A topic supports notification over multiple transports. You can choose to send SNS to multiple transports simultaneously.
+* Why does Amazon SNS provide two different transports to receive notifications over email?
+  Using Email-JSON allows applications to programmatically process emails. Email uses text only format for regular emails.  
+* Q: How can the owner grant/revoke publish or subscribe permissions on a topic?
+  Use AddPermission/RemovePermission API or through Access Control Policies
+  
+SWF
+~~~
+* SWF is a workflow service allows coordinated work across distributed piplelines
+  Amazon order processing is done via SWF (Business process workflow). Others are backend processing and analytics workflows
+* Workers and Deciders. Workers get tasks from SWF, Process tasks and return the results
+* Deciders decide on ordering, concurrancy and scheduling of tasks
+* Workers and Deciders use Long Polling to poll for tasks. This eliminates burnt CPU Cycles. Long polling uses connections that last upto 1 min.
+* Workers and Deciders use standard GET requests to get tasks or return results of SWF
+* Workers and Deciders can run anywhere (even behind FireWalls)
+* Tasks are of two types - Activity Tasks and Decision Tasks
+  Activity Tasks are the ones that are processed by workers.
+  Decision Tasks are set by Workers when a change of state occurs (such as Credit Card Charge SUCCESS or FAILURE) to inform SWF
+  of the change in status. Deciders use Decision Tasks to initiate new Activity Tasks and return those to SWF.
+  Activity and Deciders are both are Stateless.
+* Actions Related to Workers:
+	- PollForActivityTask : to get new Activity Tasks
+	- RespondActivityTaskCompleted : After worker polls and processes a task sucessfully
+	- RespondActivityTaskFailed : After worker polls and fails to process a task
+	- RepondActivityTaskCancelled : After a worker polls and cancels a task`
+* Actions related to Deciders:
+	- PollForDecisionTask : to get new Decision Tasks
+	- RespondDecisionTaskCompletd : After decider polls and processes a decision task
+* Actions related to Workflows:
+	- RegisterWorkflowType : registers a new workflow under the domain
+	- CompleteWorkflowExecution : Once deciders decide all activities are completed for the current workflow
+* Actions related to Domains:
+	- RegisterDomain : Register a new top level domain
+	- DeprecateDomain: Deregister a top level domain
+* Maximum time SWF retains task messages is 1 Year (as opposed to 14 days in case of SQS)
+* Tasks are received exactly once (as opposed to once or more than once in case of SQS)
+* Tasks can be programmatic or humans (as opposed to tasks being only programmatic in case of SQS)
+* Domains (are containers) that wrap similar activity types and tasklists. in other words : its a collection of workflows
+  Domains Workflows in one  Domain cannot interact with workflows in another Domain
+  Domains are created at account level and cannot be nested
+  Domains In order to register a new Domain, you need to call the RegisterDomain API. The API request is in JSON format and looks like
+  this:
+	"name" 			: "AbcDomain",
+	"description" 	: "Some description of Domain",
+	"workflowExecutionRetentionPeriodInDays" : "60"
+  Domains In order to deregister domains, you can call DeprecateDomain API
+* This is what your model should look like for a typical SWF Workflow:
+	DOMAIN "8648393934" (RegisterDomain, DeprecateDomain API)
+		WORKFLOW TYPE "creditCardOrderWorkflow" (RegisterWorkflow Type API)
+			ACTIVITY TYPE 1 "Verify Credit Card Details" (RegisterActivityType API)
+				ACTIVITY WORKER 1 (PollForActivityTask, RespondActivityTaskCompleted, RespondActivityTaskFailed API)
+				ACTIVITY WORKER 2
+				DECIDER 1		  (PollForDecisionTask, RespondDecisionTaskCompleted API)
+				DECIDER 2
+			ACTIVITY TYPE 2 "Charge Credit Card"
+				ACTIVITY WORKER 1 (PollForActivityTask, RespondActivityTaskCompleted, RespondActivityTaskFailed API)
+				ACTIVITY WORKER 2
+				ACTIVITY WORKER 3
+				DECIDER 1		  (PollForDecisionTask, RespondDecisionTaskCompleted API)
+				DECIDER 2
+* Can I schedule several activity tasks by issuing one decision?
+  You can schedule upto 100 activity tasks based on one decision.
+* How does Amazon SWF help with scaling my applications?
+  You can scale your application by increasing the numbers of workers and deciders (instances). SWF uses a task list to which contains the number
+  tasks. An increase in this list implies that the application needs to scale and you can add more works and decider instances.
+* Are there limits on the number of workflow executions that I can run simultaneously?
+  You can run utpo 100,000 workflow executions simultaneously
+* How long can workflow executions run?
+  Upto 1 year
+* How long can a worker take to process a task?
+  A task is a subunit of a workflow execution. Since the max of workflow execution is 1 year, a task cannot run for more than 1 year as well
+* What happens if my workflow execution is idle for an extended period of time?
+  You configure timeouts which can range upto 1 year. If the timeout expires, then an idle execution will timeout
+* Is Amazon SWF available across availability zones?
+  To manage fault tolerance, SWF manages your workflows across 3 AZs
+  
+CloudFormation
+~~~~~~~~~~~~~~
+* Note the word - CloudFormation - Construct infrastructure in Cloud, using scripts. There is no charge to use CloudFormation.
+  You only pay for the underlying resources it creates.
+* CloudFormation Can be done via PreDefined Templates, User Created Templates, or from existing Infrastructure.
+* No Limits to Number of Templates. There is a upper limit of 200 Stacks per account.
+* Stacks are the end result of the provisioning a Template. Its a collection of related resources provisioned in single unit
+* Stacks can be updated after they are created using CloudFormation! Stacks are updated in TWO WAYS :
+  DIRECT UPDATE
+  	Submit changes and Cloudformation immediately deploys the changes. via update-stack or UpdateStack API
+  CHANGESET  
+  	You can edit the template that created the stack,create a CHANGESET based on your modified template,review the CHANGESET
+  	and finally execute the CHANGESET to update the stack resources. You can use AWS Console, CLI update-stack or UpdateStack API command for this.
+  Note : Updates may cause interruptions if,say, EC2 needs to be rebooted. if you change INSTANCETYPE of your Stacks EC2 resources.
+* Stacks Delete: You may be charged for the stack resources even if the stack is deleted right away after creation.
+* Stacks : IF Stack Creation Fail, Rollback is automatic by default! You can turn it OFF so no rollback happens in case of Failure.
+* Stacks : Some useful CLI based commands on stacks:
+	- create-stack : "aws cloudformation create-stack --stack-name mystack --template-body file://c:/mytemplate.json" (gets uploaded to s3 bucket)
+	- list-stacks  : "aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE (lists and can filter stacks by status, deleted ones upto 90 days)
+	- list-stack-resources: "aws cloudformation list-stack-resources -stack-name mystack" (lists all resources created in mystack)
+	- describe-stacks : "aws cloudformation describe-stacks --stack-name mystack" (describes running stack instances)
+	- decribe-stack-events : "aws cloudformation describe-stack-events --stack-name mystack" (describes the list of events in reverse chronological order)
+	- delete-stack : "aws cloudformation delete-stack --stack-name mystack" (deletes the stack mystack)
+	- update-stack : "aws cloudformation update-stack --stack-name mystack --template-url <path> --parameters ..." (directly updates stack)
+	- get-template : "aws cloudformation get-template --stack-name mystack" (outputs the template body only.)
+	- validate-template : "aws cloudformation validate-template --template-url <path> (checks syntax of the template. wont check if an a property exists.)
+* Templates is a JSON or YAML based file stored in an S3 bucket and describes the stack and its resources and properties
+* Templates : Identify what Template looks like. Look for JSON Formatting looking something like below.
+	- AwsTemplateFormatVesion (OPTIONAL): The identifies the capabilities of the Template. If you don't specify this, CloudFormation will use the latest
+	- Resources (MANDATORY) : Actual AWS resources and their configuration values. 
+	  Resources "Type" attribute is Mandatory
+	  Resources "Properties" is Optional : Additional information a Resource May need. In some cases setting Properties is mandatory (imageId for EC2)
+	- Parameters (OPTIONAL): Parameters passed during stack creation time. Such as RDS database size, EC2 Instance Type etc.
+	  Parameters "Type" Mandatory. Can be like AWS::EC2::XXX or String or Number
+	  Parameters "Default" is Optional. If Default is provided, AWS will use it at stack creation time. Else user will be prompted to enter the value.
+	  Parameters "NoEcho" is Optional. Use to if you don't want sensitive information printed on Console
+	- Pseudo Parameters (PREDEFINED) : These are predefined by CloudFormation and can be used anywhere you might use parameters
+	  Pseudo Parameters ex is AWS::Region used in conjunction with Fn:FindInMaps
+	- Mappings (OPTIONAL) : 
+	- Conditions (OPTIONAL) : Based on Conditions Create Resources. Comma separate multiple Conditions.
+	  Conditions use Fn::Equals, Fn::If, Fn::Else, Fn::And, Fn::Or, Fn::Not
+	  Conditions ex Create an EC2 Instance if current env is test. Else create an EC2 instance with EBS Volume if its prod.
+	- Outputs(OPTIONAL): This can be customized based on your design. One Stack Creation, under this tab, whatever is configured in
+	  the Outputs section of the template will be shown. For ex, BackupLoadBalancer's DNSName property!
+	  Outputs can use APIs like Fn.GetAtt() and Fn.Join() ato construct the outputs as below:
+	{
+		"AwsTemplateFormatVersion": "2010-02-02",
+		"Resources" : {
+			"MyEC2Instance" : { -- Logical ID
+				"Type: "AWS::EC2::Instance",
+				"Properties" : {
+					"ImageId" : "ami-abcds23w", -- Will only work if stack is being created in a Region where this AMI exists
+					"SecurityGroups" : [ {"Ref" : "MyInstanceSecurityGroups" } ] -- Refers to the MyInstanceSecurityGroups resource
+				}
+			},
+			"MyOtherEC2Instance" : { -- Logical ID
+				"Type: "AWS::EC2::Instance",
+				"Properties" : {
+					"ImageId" : {"Fn:FindInMaps", ["MyRegionMaps", {"Ref" : "AWS::Region"} ] -- Pseudo Parameter AWS::Region
+					"SecurityGroups" : [ {"Ref" : "MyInstanceSecurityGroups" } ] -- Refers to the MyInstanceSecurityGroups resource
+				}
+			},
+			"MyInstanceSecurityGroups" : {
+			"Type": "AWS::EC2::SecurityGroups",
+			...
+			}
+		}
+		
+		"Mappings" : {
+			"MyRegionMaps" : {
+				"us-east-1" : "ami-xfv1234",
+				"us-west-1" : "ami-yyyy121"
+			}
+		}
+	    "Conditions" : {
+			"CreateProdResources" : {"Fn::Equals" : [{"Ref" : "EnvType"}, "prod"]}
+	    }
+		
+		"Parameters": {
+			"MyKeyName": {	--	No default provided. User will be prompted at stack creation time
+				"Description" 	: "",
+				"Type"			: "AWS::EC2::KeyPair:KeyName",
+			}
+			"WordPressUser": {
+				"Default"	: "admin",
+				"Type"		: "String",
+				"NoEcho"	: "True"	--	UserName will not be printed on the console
+			}
+		}
+		"Outputs"		: {
+			"BackupLoadBalancerDnsName" : {
+				"Description"	:	"BackupLoadBalancerName",
+				"Value"			:	{"Fn:GetAtt"	:	["BackupLoadBalancer", "DNSName"]}
+				"Condition"	    :   "CreateProdResources"
+			}
+			"URL" : {
+      				"Description" : "The URL of the website",
+      				"Value" :  { "Fn::Join" : [ "", [ "http://", { "Fn::GetAtt" : [ "ElasticLoadBalancer", "DNSName" ]}]]}
+    			}
+  		}
+	}
+* Templates : Some useful functions in CloudFormation:
+	Fn:GetAtt - Gets an attribute of the specified resource. Takes two parameters, the logical name of the resource and the 
+				attribute you want returned
+				"Fn:GetAtt" : ["BackupLoadBalancer", "DNSName"]
+	Fn:Join	  - Concatenates set of values specified by a delimiter
+				"Fn:Join" : [":", ["a", "b", "c"]] = "a:b:c"
+				"Fn:Join" : ["", ["a", "b", "c"]] = "abc"
+	Fn:Select - Selects a single object from a list of objects. Select does not check for NULL or IndexOutOfBounds.
+				Use carefully else the above conditions will cause a Stack Error
+				Select starts from index 0. So the following returns "grapes"
+				{ "Fn::Select" : [ "1", [ "apples", "grapes", "oranges", "mangoes" ] ] }
+	Fn:FindInMaps - Takes two parameters, the name of the map and the attribute name you want to retrieve
+				"Fn:FindInMaps": ["MyRegionMaps", ["Ref" : "AWS::Region"]]
+				"Fn:FindInMaps": ["MyRegionMaps", {"Ref" : "AWS::Region"}, "32"] -- "32" second level property if specified in map
+				"Fn:FindInMaps": ["MyFooMaps, "SomeAttrbiuteKeyName"]
+	Ref		  - Refer to another Resource or Parameter using their logical name
+				Ref usually returns an Id or Name of the specified Resource. "Ref" : "MyEC2Instance" -> instanceId of MyEC2Instance
+				Ref returns the VALUE of the Parameter (or Pseudo Parameter) "Ref" : "AWS::Region" -> us-east-1
+				Can be used to specify a keyname during stack creation time. So you can create a Ref to a parameter of type KeyName
+				(see example above), that will prompt at stack creation time to specify a valid keypair in the region stack is being created
+	Fn:Base64 - Returns a Base64 representation of the input string
+	Fn:GetAZs - Returns an array of AZs in a specified region
+* What is the difference between AWS CloudFormation and AWS Opsworks?
+  Opsworks makes it easy to model all the components of the application and configure aspects of application and its supporting infrastructure.
+  Cloudformation is a tool for managing AWS resources 
+* Can I install software at stack creation time?
+  Yes - you can write bootstrapping scripts to install Software like MySQL, PHP on Stack Creation Time on EC2 Instances
+* Is it possible to create an S3 bucket accessible only by a certain IAM user, using policies in a CloudFormation template?
+  Yes. This relates to the list of resources CloudFormation supports. IAM, S3 are both supported alongside EC2, VPC etc
+  In the same way, stacks can be created inside a VPC
+* Can I name ALL my resources in a Template?
+  No - You can give names to CERTAIN resources (such as S3). Reason being giving names to all resources may give conflicts when
+  an update causes a resource to be replaced. Names can be given on a case-to-case basis only
+* Does CloudFormation support EC2 and EBS Tagging?
+  Yes - Any EC2 resource that supports tagging can be tagged in an AWS Template.AWS CloudFormation automatically tags Amazon EBS volumes 
+  and Amazon EC2 instances with the name of the AWS CloudFormation stack they are part of.
+* Can Stack creation wait for  my application to startup?
+  Yes - You can use *WaitCondition* that acts a barrier blocking the creation of a resource until application sends a signal.
+  For example, if your application is launching and you want CloudTrail launch to wait, you can specify a WaitCondition
+* Can I save my data when a stack is deleted?
+  Yes by setting Deletion Policies. You can specify that Snapshots of RDS databases or EBS volumes be created when they are deleted.
+* Can I prevent deletion of certain resources when a Stack is Deleted? 
+  Yes - you can use a DeletionPolicy to specify exceptions. Use "DeletionPolicy" : "Retain" to retain those resources. Ex of a template:
+	{
+		"AWSTemplateFormatVersion" : "2010-09-09",
+		"Resources" : {
+    		"myS3Bucket" : {
+	      		"Type" : "AWS::S3::Bucket",
+      			"DeletionPolicy" : "Retain"
+    		}
+  	}
+* Can you change the database password for the stack you want to deploy using CloudFormation?
+  Yes. You can use parameters to change passwords.
+
+
+Elastic BeanStalk
+~~~~~~~~~~~~~~~~~
+With Elastic Beanstalk you can quickly deploy applications in the cloud without worrying about the infrastructure that
+runs those deployments. Simply upload your application and Elastic Beanstalk manages the capacity provisioning, load balancing,
+scaling etc. Elastic BeanStalk is free - but the resources provisioned underneath are not free.
+
+* The OS currently Supported by Elastic BeanStalk are Linux AMI or Windows Server 2012 R2 AMI
+* When setting up a Beanstalk application, go in this order:
+  - Environment - Central to Elastic Bean Stalk! Its of two types -
+	1) Web Server
+	2) Workers
+  - On Selecting (1), choose from the following Platform: .NET,Java,Python,PHP,Node.js,Go,Ruby,Docker,Servers(Tomcat,Ngyinx,Passenger,IIS)
+  - On the next screen, Choose an environment name and URL (someexample.elasticbeanstalk.com). THIS HAS BE UNIQUE GLOBALLY
+* By default, an elastic bean stalk application is public.
+* To make an application private, deploy it inside a VPC, use Security Groups, ACLs and IAM roles to restrict users
+* Elastic Beanstalk supports upto 75 Applications and upto 1000 Application versions. 200 Environments.
+* Elastic Beanstalk Components :-Application (deployable war), 
+								-Application Version (part of Application) stored in S3 labelled version of the Application, 
+								-Environment is Application Version deployed on AWS. Each Environment runs a single version, but you can run 
+								 the same version in multiple environments.
+								-Environment Configuration & Environment Configuration Template
+								 
+* Platform Updates - You can opt-in to allow Elastic Beanstalk to automatically update underlying OS, App Servers, SDKs etc.
+  Platform Updates - Elastic Beanstalks automatically updates the MINOR VERSION and PATCH releases
+  Platform Updates - Denomination is MAJORVERSION.MINORVERSION.PATCH. Eg, 1.1.1 > 2.0.0 is a Major Version Update.
+  Platform Updates - Elastic Beanstalk will NOT automatically upgrade Major Versions as they may not be backwardly compatible
+  Platform Updates - Major Version Updates can happen in one of two ways:
+						- In-Place Update of existing environment
+						- Create clone of existing environment and apply update to clone
+  Platform Updates - Updates are applied using an "Immutable Deployment Mechanism" so that no changes are applied to an existing
+					 environment until a parallel fleet of EC2 instances with updates installed are ready to be SWAPPED with the
+					 existing instances which are then terminated. 
+				   - Because of "Immutable Deployment Mechanism", application remains available to customers throughout.
+  Platform Updates - Maintanence Window is a 2 hour time slot when platform updates are performed (if you have configured Elastic
+                     BeanStalk to perform managed updates.)
+				   - Maintanence Window is per-environment (test, prod etc). You can stagger the Maintanence Window. If you don't1
+				     specify a maintanence window, but have opted-in for managed updates, a default window is provided.
+				   - Maintanence Window You can update the maintanence window by calling UpdateEnvironment API.
+  Platform Updates - The only operation you can perform during Platform Updates is ABORT
+* Does AWS Elastic Beanstalk store anything in Amazon S3?
+  Elastic Beanstalk stores application files and server logs in S3.
+* Can I use AWS Elastic Beanstalk to deploy applications that must be highly available?
+  Yes - you can use AutoScaling. Edit the environment configuration settings and choose 2 or more instances for Autoscaling minimum
+
+IAM
+~~~
+* Users, Roles, Groups : Roles can be assigned to Users and Groups
+* Access Keys can be deleted or disabled at any time. For ex: You may want to prevent a just laid-off user from accessing AWS. Disabled
+  his access keys.
+
+Route53
+~~~~~~~
+* DNS Service : Translates human-readable names like www.example.com to IP Addresses from requests. These requests are called "queries"
+* Route 53 Features : DNS Service, Domain Registrar, Health Checks to monitor endpoints. Route 53 connects requests to AWS infrastructure
+  such as S3, ELB, EC2. You can transfer existing Domains to Route 53 or create new Domain Names directly from Route 53
+* Domains : It's a general DNS concept! www.example.com 
+* Hosted Zone : Its a Route 53 concept! Collection of records belonging to a single parent Domain Name. All these records MUST 
+						 contain Domain Name as suffix. For example : 
+						 example.com Domain/Hosted Zone can contain records www.example.com, www.aws.example.com but NOT www.example.ca
+						 Hosted Zone - Record Set
+									 - Record Set
+									 - Record Set
+* Hosted Zone : Can have upto 500 Hosted Zones and 10000 Record Sets
+* Hosted Zone : Can create Multiple Hosted Zone per Domain. You can have Hosted Zone 161sb for PROD and 202gh for TEST.
+* Route 53 Does not support Website Hosting. For that you can use S3 or EC2
+* Route 53 supports the following Record Sets:
+	A
+	AAAA (IpV6)
+	CNAME(Canonical Name Record)
+	MX
+	NAPTR
+	NS
+	PTR
+	SOA
+	SPF
+	SRV
+	TXT
+	ALIAS - Maps Resource Records in Hosted Zones to S3, Elastic BeanStalk, ELB, CloudFront. Similar to CNAME that map one DNSName 
+			like www.example.com to another DNS Name like elb1234.amazonaws.com. But difference is its not Visible to resolvers. Also 
+			Alias route to S3, CloudFront, ELB, BeanStalk is Free but you pay for CNAME.
+
+* Route 53 can map Apex Domain Names like example.com to S3, ELB, Elastic BeanStalk and CloudFront using Alias
+* Route 53 supports ipv6 using AAAA (forward) and PTR (reverse) records.
+* Route 53 supports Weighted Round Robin (WRR) and Latency Based Routing (LBR) Features.
+		WRR - Assign "weights" to different record sets for A/B testing. So If you assign a "weight" of 3 to Record Set 1 and "weight"
+			  of 1 for Record set 2, 75% of the time Route 53 will return Record Set 1 and 25% of time it will return Record Set 2
+		LBR - If you run your application in multiple regions, Route 53 will route users to the region that provides lowest latency.
+* Private DNS lets you have authoritative DNS within a VPC without exposing your DNS records.
+  Private DNS you can host private HostesZones. Route 53 will only return these records from calls WITHIN VPC
+* Route 53 Pricing : Pay for what you use.No upfront prices or overcharge.Pay for usage of HostedZones,Queries,Health Checks and DomainNames
+* Q. Does Amazon Route 53 use an anycast network?
+  Yes - Anycast is a networking and routing technology that helps DNS queries get answered from optimal Route 
+
+
+VPC
+~~~
+VPC is a Virtual Private Cloud. Its a Virtual Data Center within an Availability Zone. When you create an Amazon Account, you create a
+default VPC. VPC is an isolated section in the cloud. You can create public facing subnets  for your web servers facing the Internet 
+and private facing subnets for your application servers and databases. You can create hardware VPN between corporate DataCenters and
+VPC to make VPC an extension of Corporate Data Centers - this is called a hybrid cloud.
+
+* Limits:
+  5 VPCs per account per region
+  1 Default VPC per account
+  200 Subnets per VPC
+  1 Internet Gateway per VPC
+  10 IPSEC Connections per VPC
+* VPC Peering - Allows you to connect one VPC to another through a direct network route using private IP Addresses
+  You can peer VPCs with other VPCs in the SAME account or DIFFERENT accounts. For ex: Prod VPC can peer with Development VPC. So the Dev
+  servers can talk to the Prod servers over a private network.
+  VPC Peering is NOT transitive. It is done in a  STAR Configuration. One VPC can peer with 4 others.
+  VPC Peering IS allowed between two VPCs in the SAME region. Its NOT allowed between VPCs in DIFFERENT regions.
+								
+							 VPC C
+							  |	
+						VPC B -	 VPC X - VPC A
+							  |
+							 VPC E
+* VPC Creation:
+  - Only 5 VPCs are allowed per Region
+  - VPC Name, CIDR Block, Tenancy. You cannot have VPC largers than /16. So ex is 10.0.0.0/16 can be chosen! Tenancy can be chosen as default or
+    Dedicated (ie provisioned on Dedicated instances). On creation, you get a Default ACL and a Default Route Table
+  - To allow internet access to EC2 Instances: Create Internet Gateway, Create RouteTable to InternetGateway, Associate subnets to this routetable.
+    Make sure when creating EC2 Instances, they either have a Public IP (Elastic IP) or an Elastic Load Balancer *********
+  - Route Table. When you create a new VPC it automatically creates a route table.
+    You can associate subnets with route tables.
+  - Subnets. VERY IMPORTANT - In the subnet creation wizard, you need to chooze an AZ which is important:
+    One Subnet cannot go across AZs though you can have multiple subnets per AZ. Security groups can stretch across different subnets and different AZs***
+    All subnets sharing the same route table means each subnet can talk to the other subnet that shares the same route table
+ - Internet Gateway. Allows VPC to communicate to the Internet. You can attach ONLY ONE Internet Gateway to VPC. 
+   When you create a new Internet Gateway, its detached - you need to attached to VPC. YOU CAN HAVE ONLY ONE INTERNET GATEWAY PER VPC***
+ - How to allow Internet access to EC2 Instances sitting behind public subnets? Assign an public IP or an Elastic IP! You are charged for Elastic IP!
+ - How to allow Internet access to EC2 Instances sitting behind private subnets? 
+	- Use NAT Instances. NAT are bridge between public and private subnets
+	    - NAT Instance are created from special NAT AMI and installed in PUBLIC subnets
+		- Route table on private subnet  is configured to allow PRIVATE subnets to communicate to NAT (add a route to NAT instance)
+		- Once NAT Instance is created and assigned an elastic IP, click on the Instance>Actions>Networking>Change Source/Dest>DISABLE
+		- Private instances can now access Internet, but outside requests cannot acccess private instances (like SSH, RDP)
+	- Use NAT Gateway.
+	    - Create NAT Gateway in PUBLIC subnet (Create Wizard asks for subnet and Elastic IP)
+		- Configure route table on private subnet to communicate to NAT GATEWAY (add a route to NAT Gateway)
+		- Private instances can now access Internet, but outside requests cannot access private instances (like SSH, RDP)
+	- NAT Gateway offers many advantages over NAT Instances
+		- YOU have to manage NAT INSTANCE fault tolerance (autoscaling group, patches etc). NAT Gateway is highly available with redundancy
+		- NAT Gateway offers high bandwidth with burst of upto 10Gbps. NAT Instances are configured by you (for ex t2 micro will have low bandwidth)
+			- Scenario Question : if your NAT instance are not able to cope, you may have to keep scaling up or down. NAT gateway gives this out of the box
+		- You cannot associate a security group with NAT Gateway - but you can with NAT Instance
+		- NAT Gateway Cost depends on Number of NAT Gateways, duration of usage and amount of data sent using it. NAT Instance cost depends on number of NAT
+		  Instances, duration of usage and instance size and type
+ - ACLS (Access Control Lists) act like Firewalls. They are numbered list of rules which are processed in order from smallest. 
+   They override rules in the Security group.For ex, if a security group allows port 80 but ACL disallows it- then the port is not allowed!
+   By default the ACL is created which ALLOWS all traffic. If you create custom, it defaults to DENY all traffic
+   Each subnet needs to be associated with a Network Access Control list. By default it will be associated with a default ACL. So a subnet can be associated
+   with ONE ACL. But an ACL can be assciated with multiple subnets.
+   ACL - FIREWALL FOR SUBNETS
+   SG  - FIREWALL FOR INSTANCES
+ - Security Groups  : You can change security group membership for your instances while they're running. The change reflects after a short interval
+ - You can connect your VPC to:
+	- Internet through and Internet Gateway
+	- Corporate Data Center through Virtual Private Gateway
+	- Both Internet or Corporate Data Center through Internet Gateway and Virtual Private Gateway
+	- Other VPCs through Peering
+* What is IPSec?
+  IPSecurity is a protocol for securing IP communications by securing and encrypting each packet of data
+* Can I connect to my VPC using a software VPN?
+   Yes. You may use a third-party software VPN to create a site to site or remote access VPN connection with your VPC via the Internet gateway.
+* How does a hardware VPN connection work with Amazon VPC?
+   A Hardware VPN connects your data center to your VPC in the cloud. Data transfers between DataCenters and VPC go over an encrypted 
+   VPN connection using IPSec (IP security - each packet is encrypted for securing IP). Internet Gateway is not required for Hardware VPN.
+   Connections between the Data Center and Amazon VPC are throuugh CustomerGateway (Customer End) and Virtual Private Gateway(Amazon End)
+* How do I assign IP address ranges to VPCs?
+   You assign a single CIDR block specifying IP Address Range. 10.0.0.0/16 for ex. All subnets in this VPC must be addressed within this range.
+* What IP address ranges are assigned to a default VPC?
+   Default VPCs are assigned CIDR range of 172.31.0.0/16
+* How large of a VPC can I create?
+   You can set a CIDR range between /28 and /16
+* How many VPCs can I create? How many subnets per VPC?
+   5 VPCs per region. 200 Subnets per VPC. 
+* How large or small can a subnet be?
+   A Subnet can only range inside the CIDR range specified by the VPC. Minimum thus is /28 (14 IP Addresses) and cannot be larger than VPC
+* Can I change a VPC's size?
+   You cannot change the VPC size once created. You'll need to delete the VPC and create a new one
+* Can I use all the IP addresses that I assign to a subnet?
+   No - Amazon uses the first four and last one IP Addresses of every subnet for IP networking purposes
+* How do I assign private IP addresses to Amazon EC2 instances within a VPC?
+   On EC2 Launch - you can assign primary private IP address. If you don't specify a primary private IP address, Amazon chooses one for you from
+   the IP address range for that subnet. You can optionally later assign a secondary private IP address to an Instance or Elastic Network Interface(ENI).
+* Can add I add multiple private IP addresses to an instance?
+   Yes you can add multiple private Secondary IP addresses to an instance in a VPC or to an ENI
+* Can I change the private IP addresses of an Amazon EC2 instance while it is running and/or stopped within a VPC?
+   Primary private IP addresses survive the lifetime of an instance. You can change secondary IP address at anytime.
+* How can you use Elastic IP (EIP)?
+   EIP can be assigned on instances directly and only on subnets configured to route their traffic directly to Internet Gateway.
+   EIP cannot be used on instances in subnets configured to use NAT Gateway/Instance
+   EIP can be assigned to ENI and ENI can be attached to running instance
+* What does VPC router do?
+   -Enable instances within subnets to communicate with instances in other subnets
+   -Enable subnets, Internet Gateways to communicate with each other
+   -Network usage data is not available from routers -you need to use Amazon Cloudwatch from your instances
+* How do I secure Amazon EC2 instances running within my VPC?
+   Using Security groups you can control inbound and outbound traffic to your instance. Security groups are Stateful
+   In addition, you can use ACLs to control network traffic Inbound and outbound from subnets. ACLs are Stateless
+* What is the difference between Stateful and Stateless filtering?
+   Stateful Filtering tracks the origin of request and requires only one rule (and knows what the outbound rule is automatically)
+   Stateless Filtering examines on the source and destination IP address ignoring whether the traffic is a new request or reply to a request. Hence TWO
+   rules are needed - one inbound and one outbound.
+* Can Amazon EC2 instances within a VPC communicate with Amazon EC2 instances not within a VPC?
+    Yes - you can communicate to other VPCs either through an Internet Gateway or the hardware VPN egressing from there to AWS network to other VPC
+* Can Amazon EC2 instances within a VPC communicate with Amazon S3?
+   Via Internet gatway or through Hardware VPN or direct connect egressing from data center and back into AWS network
+* Can a VPC span multiple Availability Zones?
+   Yes - a VPC can span multiple AZs. So can Security Groups : Remember, subnets cannot span AZs
+* When I call DescribeInstances(), do I see all of my Amazon EC2 instances, including those in EC2-Classic and EC2-VPC?
+   Yes you can see both. An entry in the response demarcates the two.
+* When I call DescribeVolumes(), do I see all of my Amazon EBS volumes, including those in EC2-Classic and EC2-VPC?
+   Yes. 
+* Can I use Amazon EC2 Reserved Instances with Amazon VPC?
+   Yes - you can reserve an instance in an Amazon VPC
+* Can I employ Auto Scaling within Amazon VPC?
+   Yes
+* Can I attach or detach one or more network interfaces to an EC2 instance while it's running?
+   Yes
+* Can I attach a network interface in one Availability Zone to an instance in another Availability Zone?
+   Elastic Network Instances can only be attached to instances in the same AZ
+* Can I create a peering connection to a VPC in a different region?
+   You cannot peer  two VPCs in different regions
+* Can I peer two VPCs with matching IP address ranges?
+   No - Peered VPCs must have non overlapping IPs
+* Do I need an Internet Gateway to use peering connections?
+   No -peering does not require Internet Gateways. You can traverse through the Hardware VPN, egress over the Data Center network onto the other AWS network
+* If I delete my side of a peering connection, will the other side still have access to my VPC?
+   No - if one side goes down - the other will not have access to instance in your VPC
+
+
+Shared Responsiblity Model
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+This dictates what responsiblities Amazon has and what responsibities you have!
+- Shared Responsiblity Model for Infrastructure Services (EC2, EBS, VPC)
+	- AWS Manages security of the physical infrastructure
+	- YOU manage the Data, Encryption of Server side and Client side data, Firewall, Operating System
+- Shared Responsibility Model for Container Services (RDS, EMR)
+	- AWS Manages everyting in Infrastructure + Operating System
+	- YOU manage Customer data, Server and Client side encryption and Firewall
+- Shared Responsibily Model for Abstract Services (S3, DynamoDB, SQS, SNS, SES)
+	- AWS Manages Physical, Firewall, OperatingSystem and Server Side Encryption
+	- YOU manage Customer Data and Client side Encryption
+	
+WhitePapers
+~~~~~~~~~~~
+http://media.amazonwebservices.com/AWS_Cloud_Best_Practices.pdf
+https://d0.awsstatic.com/whitepapers/Security/AWS_Security_Best_Practices.pdf?refid=em_
+http://media.amazonwebservices.com/AWS_Cloud_Architectures.pdf
+https://d0.awsstatic.com/whitepapers/Backup_Archive_and_Restore_Approaches_Using_AWS.pdf
+http://media.amazonwebservices.com/AWS_Amazon_VPC_Connectivity_Options.pdf
+http://d0.awsstatic.com/whitepapers/aws_pricing_overview.pdf
+
